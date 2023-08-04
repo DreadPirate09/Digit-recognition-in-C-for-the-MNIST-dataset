@@ -25,10 +25,32 @@ float maxValueFromArray(float *array, int len){
 
 float **giveMeAMatrixNM(int n, int m){
 	float ** matrix = (float**)malloc(n*sizeof(float*));
-	for(int i=0;i<m;i++){
+	for(int i=0;i<n;i++){
 		matrix[i] = (float*)malloc(m*sizeof(float));
 	}
 	return matrix;
+}
+
+float** dotProduct(float** matrix1, float** matrix2, int m1, int n1, int m2, int n2){
+	float** dotProd = giveMeAMatrixNM(m2,n2);
+	float sum = 0;
+	if(n1 != m2){
+		printf("the nr of cols of the first matrix is not equal with the number of rows of the second matrix!\n");
+		exit(1);
+	}
+
+	for(int i=0;i<m1;i++){
+		for(int k=0;k<n2;k++){
+			for(int j=0;j<n1;j++){
+				sum = sum + matrix1[i][j]*matrix2[j][k];
+				printf("%lf * %lf\n",matrix1[i][j],matrix2[j][k]);
+			}
+			dotProd[i][k] = sum;
+			sum = 0;
+		}
+	}
+
+	return dotProd;
 }
 
 float *giveMeArrayFromStack(float *array,int len){
@@ -111,20 +133,38 @@ int main(){
 
 	// printArray(softmax, 10);
 
-	float **arrayMatrix = giveMeAMatrixNM(2,3);
-	for(int i=0;i<2;i++){
-		for(int j=0;j<3;j++){
-			arrayMatrix[i][j] = j;
-		}
-	}
+	// float **arrayMatrix = giveMeAMatrixNM(2,3);
+	// for(int i=0;i<2;i++){
+	// 	for(int j=0;j<3;j++){
+	// 		arrayMatrix[i][j] = j;
+	// 	}
+	// }
 
 	// printMatrix(arrayMatrix, 2,3);
 	// printMatrix(getTranspose(arrayMatrix,1,3),3,1);
 
 	// printMatrix(giveMeZeros(31,33),31,33);
 
-	printMatrix(oneHot(dyn,10),10,10);
+	float **dotMatrix1 = giveMeAMatrixNM(3,3);
+	for(int i=0;i<3;i++){
+		for(int j=0;j<3;j++){
+			dotMatrix1[i][j] = j+1;
+		}
+	}
+
+	printMatrix(dotMatrix1,3,3);
+
+	float **dotMatrix2 = giveMeAMatrixNM(3,2);
+
+	for(int i=0;i<3;i++){
+		for(int j=0;j<2;j++){
+			dotMatrix2[i][j] = j+1;
+		}
+	}
+
+	// printMatrix(oneHot(dyn,10),10,10);
 	
+	printMatrix(dotProduct(dotMatrix1,dotMatrix2,3,3,3,2),3,2);
 	
 
 	return 0;
