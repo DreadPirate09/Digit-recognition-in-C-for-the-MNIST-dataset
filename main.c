@@ -1,6 +1,13 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
+#include<string.h>
+
+struct dataFromFile{
+	char** lines;
+	int nrlines;
+	int nrcols;
+};
 
 float **giveMeZeros(int n, int m){
 	float** zeros = (float**)malloc(sizeof(float*)*n);
@@ -159,13 +166,38 @@ float** oneHot(float* Y, int len){
 	return getTranspose(one_hot_y,len,len);
 }
 
+struct dataFromFile readTrain(){
+	FILE* fp;
+	struct dataFromFile dff;
+	dff.nrlines = 0;
+	dff.nrcols = 0;
+	char* line = NULL;
+	size_t len = 0;
+	ssize_t read;
+
+	fp = fopen("train.csv","r");
+
+	dff.lines = (char**)malloc(sizeof(char*)*42004);
+
+	while ((read = getline(&line, &len, fp)) != -1) {
+        dff.lines[dff.nrlines] = (char*)malloc(sizeof(char)*(int)read);
+        strncpy(dff.lines[dff.nrlines],line,read);
+        dff.nrcols = read;
+        dff.nrlines++;
+    }
+    fclose(fp);
+    if (line)
+        free(line);
+    return dff;
+}
+
 int main(){
 
-	float array[10] = {0.63,-0.41,-0.22,0.53,-0.14,0.61,0.82,-0.22,-0.11,-0.32};
-	float xxarray[10] = {1,4,3,2,5,6,7,8,9,0};
-	float *dyn = giveMeArrayFromStack(xxarray,10);
+	// float array[10] = {0.63,-0.41,-0.22,0.53,-0.14,0.61,0.82,-0.22,-0.11,-0.32};
+	// float xxarray[10] = {1,4,3,2,5,6,7,8,9,0};
+	// float *dyn = giveMeArrayFromStack(xxarray,10);
 
-	float *x = ReLU(array,10);
+	// float *x = ReLU(array,10);
 
 	// printArray(softmax, 10);
 
@@ -181,28 +213,33 @@ int main(){
 
 	// printMatrix(giveMeZeros(31,33),31,33);
 
-	float **dotMatrix1 = giveMeAMatrixNM(3,3);
-	for(int i=0;i<3;i++){
-		for(int j=0;j<3;j++){
-			dotMatrix1[i][j] = j+1;
-		}
-	}
+	// float **dotMatrix1 = giveMeAMatrixNM(3,3);
+	// for(int i=0;i<3;i++){
+	// 	for(int j=0;j<3;j++){
+	// 		dotMatrix1[i][j] = j+1;
+	// 	}
+	// }
 
-	printMatrix(dotMatrix1,3,3);
+	// printMatrix(dotMatrix1,3,3);
 
-	float **dotMatrix2 = giveMeAMatrixNM(2,5);
-	float matrixSoft[2][5] = {{3,-3,-0.3,2,3},{1,2,0,-2,3}};
+	// float **dotMatrix2 = giveMeAMatrixNM(2,5);
+	// float matrixSoft[2][5] = {{3,-3,-0.3,2,3},{1,2,0,-2,3}};
 
-	for(int i=0;i<2;i++){
-		for(int j=0;j<5;j++){
-			dotMatrix2[i][j] = matrixSoft[i][j];
-		}
-	}
-	printMatrix(softMax(dotMatrix2,2,5),2,5);
+	// for(int i=0;i<2;i++){
+	// 	for(int j=0;j<5;j++){
+	// 		dotMatrix2[i][j] = matrixSoft[i][j];
+	// 	}
+	// }
+	// printMatrix(softMax(dotMatrix2,2,5),2,5);
 	// printMatrix(oneHot(dyn,10),10,10);
 	
 	// printMatrix(dotProduct(dotMatrix1,dotMatrix2,3,3,3,2),3,2);
 
+	struct dataFromFile dff = readTrain();
+	printf("nr of lines : %d\n",dff.nrlines);
+	for(int i=0;i<dff.nrlines;i++){
+		printf("%s\n",dff.lines[i]);
+	}
 
 	
 
