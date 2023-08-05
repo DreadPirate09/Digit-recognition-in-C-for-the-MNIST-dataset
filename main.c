@@ -9,6 +9,60 @@ struct dataFromFile{
 	int nrcols;
 };
 
+struct numbersLine {
+	int nrValues;
+	float value[785];
+};
+
+float **giveMeAMatrixNM(int n, int m){
+	float ** matrix = (float**)malloc(n*sizeof(float*));
+	for(int i=0;i<n;i++){
+		matrix[i] = (float*)malloc(m*sizeof(float));
+	}
+	return matrix;
+}
+
+
+float getNumber(char* str, int len){
+	float number = 0.0;
+	for(int i=0;i<len;i++){
+		number = number * 10 + str[i]-'0';
+	}
+	return number;
+}
+
+struct numbersLine transformCSVNumbersToFloatsArray(char* line, int len){
+	printf("transform\n");
+	//this si ment to be done on a training set with the shape of 42000x785 so we have min 785x3 size of characters that should be feed to the array 
+	char new[785][3];
+	struct numbersLine nrValues;
+	nrValues.nrValues = 0;
+	int nr = 0;
+	char* chunk;
+	chunk = strtok(line,",");
+	while(chunk!=NULL){
+		strncpy(new[nr],chunk,strlen(chunk));
+		new[nr][strlen(chunk)] = '\0';
+		nr++;
+		chunk = strtok(NULL,",");
+	}
+	nrValues.nrValues = nr;
+	for(int i=0;i<nr;i++){
+		nrValues.value[i] = getNumber(new[i],strlen(new[i]));
+	}
+	return nrValues;
+}
+
+struct numbersLine* matrixFromStringToFloat(struct dataFromFile DF){
+	struct numbersLine* nrValues = malloc(sizeof(struct numbersLine) * DF.nrlines);
+	for(int i=1;i<DF.nrlines;i++){
+		printf("enter in the loop\n");
+		nrValues[i] = transformCSVNumbersToFloatsArray(DF.lines[i], DF.nrcols);
+		printf("%lf\n",nrValues[i].value[10]);
+	}
+	return nrValues;
+}
+
 float **giveMeZeros(int n, int m){
 	float** zeros = (float**)malloc(sizeof(float*)*n);
 	for(int i=0;i<n;i++){
@@ -30,13 +84,6 @@ float maxValueFromArray(float *array, int len){
 	return max;
 }
 
-float **giveMeAMatrixNM(int n, int m){
-	float ** matrix = (float**)malloc(n*sizeof(float*));
-	for(int i=0;i<n;i++){
-		matrix[i] = (float*)malloc(m*sizeof(float));
-	}
-	return matrix;
-}
 
 float** dotProduct(float** matrix1, float** matrix2, int m1, int n1, int m2, int n2){
 	float** dotProd = giveMeAMatrixNM(m2,n2);
@@ -83,7 +130,7 @@ void printMatrix(float **matrix, int n, int m){
 	}
 }
 
-int* ReLU(float *array, int len){
+float* ReLU(float *array, int len){
 	float *new = (float*)malloc(len*sizeof(float));
 	for(int i = 0; i<len;i++){
 		if(array[i] > 0.0){
@@ -95,7 +142,7 @@ int* ReLU(float *array, int len){
 	return new;
 }
 
-int* ReLU_deriv(float* array, int len){
+float* ReLU_deriv(float* array, int len){
 		float *new = (float*)malloc(len*sizeof(float));
 	for(int i = 0; i<len;i++){
 		if(array[i] > 0.0){
@@ -167,7 +214,8 @@ float** oneHot(float* Y, int len){
 }
 
 struct dataFromFile readTrain(){
-	FILE* fp;
+	printf("read the dataset\n");
+	FILE* fp = NULL;
 	struct dataFromFile dff;
 	dff.nrlines = 0;
 	dff.nrcols = 0;
@@ -175,19 +223,31 @@ struct dataFromFile readTrain(){
 	size_t len = 0;
 	ssize_t read;
 
+	printf("Try to open\n");
 	fp = fopen("train.csv","r");
+	printf("Opened\n");
+	if(fp == NULL){
+		printf("The file is open somewhere else\n");
+		exit(1);
+	}
 
 	dff.lines = (char**)malloc(sizeof(char*)*42004);
 
 	while ((read = getline(&line, &len, fp)) != -1) {
-        dff.lines[dff.nrlines] = (char*)malloc(sizeof(char)*(int)read);
+		printf("Start while\n");
+        dff.lines[dff.nrlines] = (char*)malloc(sizeof(char)*read+1);
         strncpy(dff.lines[dff.nrlines],line,read);
+        printf("here we go\n");
+        dff.lines[dff.nrlines][read] = '\0';
+        printf("PA\n");
         dff.nrcols = read;
         dff.nrlines++;
     }
+    printf("Done with the while\n");
     fclose(fp);
     if (line)
         free(line);
+    printf("Done!\n");
     return dff;
 }
 
@@ -237,9 +297,14 @@ int main(){
 
 	struct dataFromFile dff = readTrain();
 	printf("nr of lines : %d\n",dff.nrlines);
-	for(int i=0;i<dff.nrlines;i++){
-		printf("%s\n",dff.lines[i]);
-	}
+	// for(int i=0;i<dff.nrlines;i++){
+	// 	printf("%s\n",dff.lines[i]);
+	// }
+
+	printf("start\n");
+	struct numbersLine* value = matrixFromStringToFloat(dff);
+
+	printf("done");
 
 	
 
