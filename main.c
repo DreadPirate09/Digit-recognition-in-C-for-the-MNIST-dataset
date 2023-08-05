@@ -70,11 +70,12 @@ void printArray(float *array, int len){
 void printMatrix(float **matrix, int n, int m){
 	for(int i=0;i<n;i++){
 		for(int j=0;j<m;j++){
-			printf("%.2lf ",matrix[i][j]);
+			printf("%.6lf ",matrix[i][j]);
 		}
 		printf("\n");
 	}
 }
+
 int* ReLU(float *array, int len){
 	float *new = (float*)malloc(len*sizeof(float));
 	for(int i = 0; i<len;i++){
@@ -87,21 +88,57 @@ int* ReLU(float *array, int len){
 	return new;
 }
 
-float sumExp(float *array, int len){
-	float summed = 0;
-	for(int i=0;i<len;i++){
-		summed = summed + exp(array[i]);
-	}
-	return summed;
-}
-
-float* softMax(float *array, int len){
-	float *new = (float*)malloc(len*sizeof(float));
-	for(int i=0;i<len;i++){
-		new[i] = exp((float)array[i]) / sumExp(array,len);
+int* ReLU_deriv(float* array, int len){
+		float *new = (float*)malloc(len*sizeof(float));
+	for(int i = 0; i<len;i++){
+		if(array[i] > 0.0){
+			new[i] = 1;
+		}else{
+			new[i] = 0.0;
+		}
 	}
 	return new;
 }
+
+float** sumMatrixExp(float **array, int m, int n){
+	float** new = giveMeAMatrixNM(1,n);
+	for(int i=0;i<n;i++){
+		new[0][i] = 0;
+	}
+	for(int i=0;i<m;i++){
+		for(int j=0;j<n;j++){
+			new[0][j] = new[0][j] + exp((float)array[i][j]);
+		}
+	}
+
+	return new;
+}
+
+float** matrixExp(float **array, int m ,int n){
+	float** new = giveMeAMatrixNM(m,n);
+	for(int i = 0;i<m;i++){
+		for(int j=0;j<n;j++){
+			new[i][j] = exp((float)array[i][j]);
+		}
+	}
+	return new;
+}
+
+float** softMax(float **array, int m, int n){
+	float** new = (float**)malloc(m*sizeof(float*));
+	float** matrix_Exp = matrixExp(array,m,n);
+	float** sum_Matrix_Exp = sumMatrixExp(array,m,n);
+	printMatrix(matrix_Exp,m,n);
+	printMatrix(sum_Matrix_Exp,1,n);
+	for(int i=0;i<m;i++){
+		new[i] = (float*)malloc(n*sizeof(float));
+		for(int j = 0; j < n; j++){
+			new[i][j] = matrix_Exp[i][j]/sum_Matrix_Exp[0][j];
+		}
+	}
+	return new;
+}
+
 
 float** getTranspose(float **matrix, int n, int m){
 	float **transpose = (float**)malloc(m*sizeof(float *));
@@ -129,7 +166,6 @@ int main(){
 	float *dyn = giveMeArrayFromStack(xxarray,10);
 
 	float *x = ReLU(array,10);
-	float *softmax = softMax(array, 10);
 
 	// printArray(softmax, 10);
 
@@ -154,17 +190,20 @@ int main(){
 
 	printMatrix(dotMatrix1,3,3);
 
-	float **dotMatrix2 = giveMeAMatrixNM(3,2);
+	float **dotMatrix2 = giveMeAMatrixNM(2,5);
+	float matrixSoft[2][5] = {{3,-3,-0.3,2,3},{1,2,0,-2,3}};
 
-	for(int i=0;i<3;i++){
-		for(int j=0;j<2;j++){
-			dotMatrix2[i][j] = j+1;
+	for(int i=0;i<2;i++){
+		for(int j=0;j<5;j++){
+			dotMatrix2[i][j] = matrixSoft[i][j];
 		}
 	}
-
+	printMatrix(softMax(dotMatrix2,2,5),2,5);
 	// printMatrix(oneHot(dyn,10),10,10);
 	
-	printMatrix(dotProduct(dotMatrix1,dotMatrix2,3,3,3,2),3,2);
+	// printMatrix(dotProduct(dotMatrix1,dotMatrix2,3,3,3,2),3,2);
+
+
 	
 
 	return 0;
