@@ -14,6 +14,14 @@ struct numbersLine {
 	float value[785];
 };
 
+float getAccuracy(float *array1, float *array2, int len){
+	float sum = 0;
+	for(int i=0;i<len;i++){
+		sum += array1[i] == array2[i] ? 1 : 0;
+	}
+	return (float)sum/len;
+}
+
 float **giveMeAMatrixNM(int n, int m){
 	float ** matrix = (float**)malloc(n*sizeof(float*));
 	for(int i=0;i<n;i++){
@@ -22,6 +30,13 @@ float **giveMeAMatrixNM(int n, int m){
 	return matrix;
 }
 
+float argmax(float *array, int len){
+	float max = 0;
+	for(int i=0;i<len;i++){
+		max = array[i] > max ? array[i] : max;
+	}
+	return max;
+}
 
 float getNumber(char* str, int len){
 	float number = 0.0;
@@ -72,6 +87,16 @@ float** substractMatrix(float** matrix1, float** matrix2, int m, int n){
 	}
 	return sum;
 }
+
+float** matrixTimesScalar(float** matrix, float scalar, int m, int n){
+	for(int i=0;i<m;i++){
+		for(int j=0;j<n;j++){
+			matrix[i][j] = matrix[i][j] * scalar;
+		}
+	}
+	return matrix;
+}
+
 struct numbersLine* matrixFromStringToFloat(struct dataFromFile DF){
 	struct numbersLine* nrValues = malloc(sizeof(struct numbersLine) * DF.nrlines);
 	for(int i=1;i<DF.nrlines;i++){
@@ -320,24 +345,15 @@ int main(){
 	// 	printf("%s\n",dff.lines[i]);
 	// }
 
-	printf("start\n");
+	// printf("start\n");
 	// struct numbersLine* value = matrixFromStringToFloat(dff);
 
-	printf("done");
+	// printf("done");
 
+	// float array1[11] = {1,2,13,5,6,5,7,8,9,0,1};
+	// float array2[11] = {1,2,3,5,6,5,7,8,9,0,2};
+	// printf("%.2f",getAccuracy(array1,array2,11));
 
-	float** m1 = (float**)malloc(sizeof(float)*3);
-	float** m2 = (float**)malloc(sizeof(float)*3);
-	for(int i=0;i<3;i++){
-		m1[i] = (float*)malloc(sizeof(float)*3);
-		m2[i] = (float*)malloc(sizeof(float)*3);
-		for(int j=0;j<3;j++){
-			m1[i][j] = i;
-			m2[i][j] = j;
-		}
-	}
-
-	printMatrix(addMatrix(m1,m2,3,3),3,3);
 	
 
 	return 0;
