@@ -3,6 +3,97 @@
 #include<math.h>
 #include<string.h>
 
+struct dataFromFile;
+struct numbersLine;
+struct paramsLayerOne{
+	float** W1;
+	float** b1;
+	float** W2;
+	float** b2;
+};
+
+float getAccuracy(float *array1, float *array2, int len);
+float **giveMeAMatrixNM(int n, int m);
+float argmax(float *array, int len);
+float getNumber(char* str, int len);
+struct numbersLine transformCSVNumbersToFloatsArray(char* line, int len);
+float** addMatrix(float** matrix1, float** matrix2, int m, int n);
+float** substractMatrix(float** matrix1, float** matrix2, int m, int n);
+float** substractMatrixVal(float** matrix1, float val, int m, int n);
+float** matrixTimesScalar(float** matrix, float scalar, int m, int n);
+float** matrixTimesScalarArray(float** matrix, float* scalar, int m, int n);
+struct numbersLine* matrixFromStringToFloat(struct dataFromFile DF);
+float **giveMeZeros(int n, int m);
+float maxValueFromArray(float *array, int len);
+float** dotProduct(float** matrix1, float** matrix2, int m1, int n1, int m2, int n2);
+float *giveMeArrayFromStack(float *array,int len);
+void printArray(float *array, int len);
+void printMatrix(float **matrix, int n, int m);
+float* ReLU(float *array, int len);
+float* ReLU_deriv(float* array, int len);
+float** sumMatrixExp(float **array, int m, int n);
+float** matrixExp(float **array, int m ,int n);
+float** softMax(float **array, int m, int n);
+float** getTranspose(float **matrix, int n, int m);
+float** oneHot(float* Y, int len);
+struct dataFromFile readTrain();
+struct paramsLayerOne updateParams(float** W1, float** b1,float** W2, float** b2, int m, int n, float** dW1, float db1, float** dW2, float db2, float alpha);
+
+int main(){
+	float** W1 = giveMeAMatrixNM(3,3);
+	float** W2 = giveMeAMatrixNM(3,3);
+	float** dW1 = giveMeAMatrixNM(3,3);
+	float** dW2 = giveMeAMatrixNM(3,3);
+
+	for(int i=0;i<3;i++){
+		for(int j=0;j<3;j++){
+			W1[i][j] = (j+1);
+			dW1[i][j] = (j+1);
+			W2[i][j] = (j+1);
+			dW2[i][j] = (j+1);
+		}
+	}
+
+	float** b1 = giveMeAMatrixNM(3,1);
+	float** b2 = giveMeAMatrixNM(3,1);
+
+	for(int i=0;i<3;i++){
+		b1[i][0] = i+1;
+		b2[i][0] = i+1;
+	}
+
+	float db1 = 0.5;
+	float db2 = 0.5;
+	float alpha = 0.1;
+
+
+	struct paramsLayerOne test;
+	test = updateParams(W1,b1,W2,b2,3,3,dW1,db1,dW2,db2,alpha);
+
+	printf("W1:\n");
+	printMatrix(test.W1,3,3);
+	printf("b1:\n");
+	printMatrix(test.b1,3,1);
+	printf("W2:\n");
+	printMatrix(test.W2,3,3);
+	printf("Wb2:\n");
+	printMatrix(test.b2,3,1);
+	
+
+	return 0;
+}
+
+
+
+
+
+
+
+// =================================================================================================================================================================
+
+
+
+
 struct dataFromFile{
 	char** lines;
 	int nrlines;
@@ -92,6 +183,15 @@ float** matrixTimesScalar(float** matrix, float scalar, int m, int n){
 	for(int i=0;i<m;i++){
 		for(int j=0;j<n;j++){
 			matrix[i][j] = matrix[i][j] * scalar;
+		}
+	}
+	return matrix;
+}
+
+float** matrixTimesScalarArray(float** matrix, float* scalar, int m, int n){
+	for(int i=0;i<m;i++){
+		for(int j=0;j<n;j++){
+			matrix[i][j] = matrix[i][j] * scalar[i];
 		}
 	}
 	return matrix;
@@ -295,66 +395,27 @@ struct dataFromFile readTrain(){
     return dff;
 }
 
-int main(){
-
-	// float array[10] = {0.63,-0.41,-0.22,0.53,-0.14,0.61,0.82,-0.22,-0.11,-0.32};
-	// float xxarray[10] = {1,4,3,2,5,6,7,8,9,0};
-	// float *dyn = giveMeArrayFromStack(xxarray,10);
-
-	// float *x = ReLU(array,10);
-
-	// printArray(softmax, 10);
-
-	// float **arrayMatrix = giveMeAMatrixNM(2,3);
-	// for(int i=0;i<2;i++){
-	// 	for(int j=0;j<3;j++){
-	// 		arrayMatrix[i][j] = j;
-	// 	}
-	// }
-
-	// printMatrix(arrayMatrix, 2,3);
-	// printMatrix(getTranspose(arrayMatrix,1,3),3,1);
-
-	// printMatrix(giveMeZeros(31,33),31,33);
-
-	// float **dotMatrix1 = giveMeAMatrixNM(3,3);
-	// for(int i=0;i<3;i++){
-	// 	for(int j=0;j<3;j++){
-	// 		dotMatrix1[i][j] = j+1;
-	// 	}
-	// }
-
-	// printMatrix(dotMatrix1,3,3);
-
-	// float **dotMatrix2 = giveMeAMatrixNM(2,5);
-	// float matrixSoft[2][5] = {{3,-3,-0.3,2,3},{1,2,0,-2,3}};
-
-	// for(int i=0;i<2;i++){
-	// 	for(int j=0;j<5;j++){
-	// 		dotMatrix2[i][j] = matrixSoft[i][j];
-	// 	}
-	// }
-	// printMatrix(softMax(dotMatrix2,2,5),2,5);
-	// printMatrix(oneHot(dyn,10),10,10);
-	
-	// printMatrix(dotProduct(dotMatrix1,dotMatrix2,3,3,3,2),3,2);
-
-	// struct dataFromFile dff = readTrain();
-	// printf("nr of lines : %d\n",dff.nrlines);
-	// for(int i=0;i<dff.nrlines;i++){
-	// 	printf("%s\n",dff.lines[i]);
-	// }
-
-	// printf("start\n");
-	// struct numbersLine* value = matrixFromStringToFloat(dff);
-
-	// printf("done");
-
-	// float array1[11] = {1,2,13,5,6,5,7,8,9,0,1};
-	// float array2[11] = {1,2,3,5,6,5,7,8,9,0,2};
-	// printf("%.2f",getAccuracy(array1,array2,11));
-
-	
-
-	return 0;
+float** substractMatrixVal(float** matrix1, float val, int m, int n){
+	for(int i=0;i<m;i++){
+		for(int j=0;j<n;j++){
+			matrix1[i][j] = matrix1[i][j] - val;
+		}
+	}
+	return matrix1;
 }
+
+
+struct paramsLayerOne updateParams(float** W1, float** b1,float** W2, float** b2, int m, int n, float** dW1, float db1, float** dW2, float db2, float alpha){
+	W1 = substractMatrix(W1, matrixTimesScalar(dW1, alpha, m, n), m, n);
+	b1 = substractMatrixVal(b1, (alpha * db1), m, 1);
+	W2 = substractMatrix(W2, matrixTimesScalar(dW2, alpha, m, n), m, n);
+	b2 = substractMatrixVal(b2, (alpha * db2), m, 1);
+
+	struct paramsLayerOne pack;
+	pack.W1 = W1;
+	pack.b1 = b1;
+	pack.W2 = W2;
+	pack.b2 = b2;
+	return pack;
+}
+
