@@ -53,6 +53,25 @@ struct numbersLine transformCSVNumbersToFloatsArray(char* line, int len){
 	return nrValues;
 }
 
+float** addMatrix(float** matrix1, float** matrix2, int m, int n){
+	float** sum = giveMeAMatrixNM(m,n);
+	for(int i=0;i<m;i++){
+		for(int j=0;j<n;j++){
+			sum[i][j] = matrix1[i][j] + matrix2[i][j];
+		}
+	}
+	return sum;
+}
+
+float** substractMatrix(float** matrix1, float** matrix2, int m, int n){
+	float** sum = giveMeAMatrixNM(m,n);
+	for(int i=0;i<m;i++){
+		for(int j=0;j<n;j++){
+			sum[i][j] = matrix1[i][j] - matrix2[i][j];
+		}
+	}
+	return sum;
+}
 struct numbersLine* matrixFromStringToFloat(struct dataFromFile DF){
 	struct numbersLine* nrValues = malloc(sizeof(struct numbersLine) * DF.nrlines);
 	for(int i=1;i<DF.nrlines;i++){
@@ -97,7 +116,7 @@ float** dotProduct(float** matrix1, float** matrix2, int m1, int n1, int m2, int
 		for(int k=0;k<n2;k++){
 			for(int j=0;j<n1;j++){
 				sum = sum + matrix1[i][j]*matrix2[j][k];
-				printf("%lf * %lf\n",matrix1[i][j],matrix2[j][k]);
+				// printf("%lf * %lf\n",matrix1[i][j],matrix2[j][k]);
 			}
 			dotProd[i][k] = sum;
 			sum = 0;
@@ -295,17 +314,30 @@ int main(){
 	
 	// printMatrix(dotProduct(dotMatrix1,dotMatrix2,3,3,3,2),3,2);
 
-	struct dataFromFile dff = readTrain();
-	printf("nr of lines : %d\n",dff.nrlines);
+	// struct dataFromFile dff = readTrain();
+	// printf("nr of lines : %d\n",dff.nrlines);
 	// for(int i=0;i<dff.nrlines;i++){
 	// 	printf("%s\n",dff.lines[i]);
 	// }
 
 	printf("start\n");
-	struct numbersLine* value = matrixFromStringToFloat(dff);
+	// struct numbersLine* value = matrixFromStringToFloat(dff);
 
 	printf("done");
 
+
+	float** m1 = (float**)malloc(sizeof(float)*3);
+	float** m2 = (float**)malloc(sizeof(float)*3);
+	for(int i=0;i<3;i++){
+		m1[i] = (float*)malloc(sizeof(float)*3);
+		m2[i] = (float*)malloc(sizeof(float)*3);
+		for(int j=0;j<3;j++){
+			m1[i][j] = i;
+			m2[i][j] = j;
+		}
+	}
+
+	printMatrix(addMatrix(m1,m2,3,3),3,3);
 	
 
 	return 0;
