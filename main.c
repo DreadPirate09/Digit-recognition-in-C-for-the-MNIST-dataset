@@ -2,9 +2,17 @@
 #include<stdlib.h>
 #include<math.h>
 #include<string.h>
+#include<time.h>
 
 struct dataFromFile;
 struct numbersLine;
+struct initParams{
+	float** W1;
+	float** W2;
+	float** b1;
+	float** b2;
+};
+
 struct paramsLayerOne{
 	float** W1;
 	float** b1;
@@ -12,12 +20,19 @@ struct paramsLayerOne{
 	float** b2;
 };
 
+struct forwardPropData{
+	float** Z1;
+	float** A1;
+	float** Z2;
+	float** A2;
+};
+
 float getAccuracy(float *array1, float *array2, int len);
 float **giveMeAMatrixNM(int n, int m);
 float argmax(float *array, int len);
 float getNumber(char* str, int len);
 struct numbersLine transformCSVNumbersToFloatsArray(char* line, int len);
-float** addMatrix(float** matrix1, float** matrix2, int m, int n);
+float** addMatrix(float** matrix1, float** matrix2, int m1, int n1,int m2, int n2);
 float** substractMatrix(float** matrix1, float** matrix2, int m, int n);
 float** substractMatrixVal(float** matrix1, float val, int m, int n);
 float** matrixTimesScalar(float** matrix, float scalar, int m, int n);
@@ -29,7 +44,7 @@ float** dotProduct(float** matrix1, float** matrix2, int m1, int n1, int m2, int
 float *giveMeArrayFromStack(float *array,int len);
 void printArray(float *array, int len);
 void printMatrix(float **matrix, int n, int m);
-float* ReLU(float *array, int len);
+float** ReLU(float **array, int x, int y);
 float* ReLU_deriv(float* array, int len);
 float** sumMatrixExp(float **array, int m, int n);
 float** matrixExp(float **array, int m ,int n);
@@ -38,6 +53,9 @@ float** getTranspose(float **matrix, int n, int m);
 float** oneHot(float* Y, int len);
 struct dataFromFile readTrain();
 struct paramsLayerOne updateParams(float** W1, float** b1,float** W2, float** b2, int m, int n, float** dW1, float db1, float** dW2, float db2, float alpha);
+float **giveMeARandomMatrixNM(int n, int m);
+struct initParams getInitParams();
+struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2, int m1, int n1, int m2, int n2,float** X,int xm,int xn);
 
 int main(){
 	float** W1 = giveMeAMatrixNM(3,3);
@@ -70,15 +88,47 @@ int main(){
 	struct paramsLayerOne test;
 	test = updateParams(W1,b1,W2,b2,3,3,dW1,db1,dW2,db2,alpha);
 
-	printf("W1:\n");
-	printMatrix(test.W1,3,3);
-	printf("b1:\n");
-	printMatrix(test.b1,3,1);
-	printf("W2:\n");
-	printMatrix(test.W2,3,3);
-	printf("Wb2:\n");
-	printMatrix(test.b2,3,1);
+	// printf("W1:\n");
+	// printMatrix(test.W1,3,3);
+	// printf("b1:\n");
+	// printMatrix(test.b1,3,1);
+	// printf("W2:\n");
+	// printMatrix(test.W2,3,3);
+	// printf("Wb2:\n");
+	// printMatrix(test.b2,3,1);
 	
+	// printMatrix(giveMeARandomMatrixNM(10,10),10,10);
+
+	// struct initParams x = getInitParams();
+	// printMatrix(x.W1,10,784);
+	float** Ww1 = giveMeAMatrixNM(6,6);
+	float** bb1 = giveMeAMatrixNM(6,1);
+	float** Ww2 = giveMeAMatrixNM(6,6);
+	float** bb2 = giveMeAMatrixNM(6,1);
+	float** Xx = giveMeAMatrixNM(6,10);
+
+	for(int i=0;i<6;i++){
+		bb1[i][0] = (float)(i+1)/10;
+		bb2[i][0] = (float)i+1;
+		for(int j=0;j<6;j++){
+			Ww1[i][j] = (float)(j+1)/10;
+			Ww2[i][j] = (float)(j+1)/10;
+		}
+	}
+
+	for(int i=0;i<6;i++){
+		for(int j=0;j<10;j++){
+			Xx[i][j] = (float)(j+1)/10;
+			if( j == 9){
+				Xx[i][j] = (float)0.1;
+			}
+		}
+	}
+
+
+
+
+	struct forwardPropData res = forwardProp(Ww1,bb1,Ww2,bb2,6,6,6,1,Xx,6,10);
 
 	return 0;
 }
@@ -105,6 +155,16 @@ struct numbersLine {
 	float value[785];
 };
 
+struct initParams getInitParams(){
+	struct initParams x;
+	x.W1 = substractMatrixVal(giveMeARandomMatrixNM(10,784),0.5,10,784);
+	x.b1 = substractMatrixVal(giveMeARandomMatrixNM(10,1),0.5,10,1);
+	x.W2 = substractMatrixVal(giveMeARandomMatrixNM(10,784),0.5,10,784);
+	x.b2 = substractMatrixVal(giveMeARandomMatrixNM(10,1),0.5,10,1);
+	return x;
+}
+
+
 float getAccuracy(float *array1, float *array2, int len){
 	float sum = 0;
 	for(int i=0;i<len;i++){
@@ -117,6 +177,21 @@ float **giveMeAMatrixNM(int n, int m){
 	float ** matrix = (float**)malloc(n*sizeof(float*));
 	for(int i=0;i<n;i++){
 		matrix[i] = (float*)malloc(m*sizeof(float));
+	}
+	return matrix;
+}
+
+float **giveMeARandomMatrixNM(int n, int m){
+	float ** matrix = (float**)malloc(n*sizeof(float*));
+	srand(time(NULL));
+    // Generate a random number between 0 and 1
+    double randomValue = (double)rand() / RAND_MAX;
+	for(int i=0;i<n;i++){
+		matrix[i] = (float*)malloc(m*sizeof(float));
+		for(int j=0;j<m;j++){
+			matrix[i][j] = randomValue;
+			randomValue =  (double)rand() / RAND_MAX;
+		}
 	}
 	return matrix;
 }
@@ -159,11 +234,19 @@ struct numbersLine transformCSVNumbersToFloatsArray(char* line, int len){
 	return nrValues;
 }
 
-float** addMatrix(float** matrix1, float** matrix2, int m, int n){
-	float** sum = giveMeAMatrixNM(m,n);
-	for(int i=0;i<m;i++){
-		for(int j=0;j<n;j++){
-			sum[i][j] = matrix1[i][j] + matrix2[i][j];
+float** addMatrix(float** matrix1, float** matrix2, int m1, int n1, int m2, int n2){
+	float** sum = giveMeAMatrixNM(m1,n1);
+	if( n2 == 1 ){
+		for(int i=0;i<m1;i++){
+			for(int j=0;j<n1;j++){
+				sum[i][j] = matrix1[i][j] + matrix2[i][0];
+			}
+		}
+	} else {
+		for(int i=0;i<m1;i++){
+			for(int j=0;j<n1;j++){
+				sum[i][j] = matrix1[i][j] + matrix2[i][j];
+			}
 		}
 	}
 	return sum;
@@ -247,7 +330,6 @@ float** dotProduct(float** matrix1, float** matrix2, int m1, int n1, int m2, int
 			sum = 0;
 		}
 	}
-
 	return dotProd;
 }
 
@@ -274,13 +356,16 @@ void printMatrix(float **matrix, int n, int m){
 	}
 }
 
-float* ReLU(float *array, int len){
-	float *new = (float*)malloc(len*sizeof(float));
-	for(int i = 0; i<len;i++){
-		if(array[i] > 0.0){
-			new[i] = array[i];
-		}else{
-			new[i] = 0.0;
+float** ReLU(float **array, int x, int y){
+	float **new = (float**)malloc(x*sizeof(float*));
+	for(int i = 0; i<x;i++){
+		new[i] = (float*)malloc(sizeof(float)*y);
+		for(int j=0;j<y;j++){
+			if(array[i][j] > 0.0){
+				new[i][j] = array[i][j];
+			}else{
+				new[i][j] = 0.0;
+			}
 		}
 	}
 	return new;
@@ -326,8 +411,6 @@ float** softMax(float **array, int m, int n){
 	float** new = (float**)malloc(m*sizeof(float*));
 	float** matrix_Exp = matrixExp(array,m,n);
 	float** sum_Matrix_Exp = sumMatrixExp(array,m,n);
-	printMatrix(matrix_Exp,m,n);
-	printMatrix(sum_Matrix_Exp,1,n);
 	for(int i=0;i<m;i++){
 		new[i] = (float*)malloc(n*sizeof(float));
 		for(int j = 0; j < n; j++){
@@ -417,5 +500,28 @@ struct paramsLayerOne updateParams(float** W1, float** b1,float** W2, float** b2
 	pack.W2 = W2;
 	pack.b2 = b2;
 	return pack;
+}
+
+struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2, int m1, int n1, int m2, int n2,float** X,int xm,int xn){
+	struct forwardPropData result;
+
+	printMatrix(W1,m1,n1);
+	printMatrix(b1,m2,n2);
+	printMatrix(W2,m1,m1);
+	printMatrix(b2,m2,n2);
+
+	result.Z1 = addMatrix(dotProduct(W1,X,m1,n1,xm,xn),b1,m1,xn,m1,1);
+	printf("This is the Z1 :\n");
+	printMatrix(result.Z1,m1,xn);
+	result.A1 = ReLU(result.Z1,m1,xn);
+	printf("This is the A1 :\n");
+	printMatrix(result.A1,m1,xn);
+	result.Z2 = addMatrix(dotProduct(W2, result.A1,m1,m1,m1,xn),b2,m1,xn,m1,1);
+	printf("This is the Z2 :\n");
+	printMatrix(result.Z2,m1,xn);
+	result.A2 = softMax(result.Z2, xm,xn);
+	printMatrix(result.A2, m1,xn);
+
+	return result;
 }
 
