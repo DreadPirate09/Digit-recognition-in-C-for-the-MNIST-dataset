@@ -56,6 +56,7 @@ struct paramsLayerOne updateParams(float** W1, float** b1,float** W2, float** b2
 float **giveMeARandomMatrixNM(int n, int m);
 struct initParams getInitParams();
 struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2, int m1, int n1, int m2, int n2,float** X,int xm,int xn);
+struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float** Y,int xm,int xn,int ym,int yn);
 
 int main(){
 	float** W1 = giveMeAMatrixNM(3,3);
@@ -523,5 +524,20 @@ struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2
 	printMatrix(result.A2, m1,xn);
 
 	return result;
+}
+
+// /W1, b1, W2, b2, dW1, db1, dW2, db2, alpha
+
+// Z1 : (10, 41000)
+// A1 : (10, 41000)
+// Z2 : (10, 41000)
+// A2 : (10, 41000)
+// W1 : (10, 784)
+// W2 : (10, 10)
+// X : (784, 41000)
+// Y : (41000,)
+
+struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float** Y,int xm,int xn,int ym,int yn){
+
 }
 
