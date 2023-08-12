@@ -3,6 +3,9 @@
 #include<math.h>
 #include<string.h>
 #include<time.h>
+#define DATA_SHAPE_M 42000
+#define DATA_SHAPE_N 785
+
 
 struct dataFromFile;
 struct numbersLine;
@@ -47,6 +50,7 @@ void printMatrix(float **matrix, int n, int m);
 float** ReLU(float **array, int x, int y);
 float* ReLU_deriv(float* array, int len);
 float** sumMatrixExp(float **array, int m, int n);
+float sumMatrix(float** matrix, int m ,int n);
 float** matrixExp(float **array, int m ,int n);
 float** softMax(float **array, int m, int n);
 float** getTranspose(float **matrix, int n, int m);
@@ -155,6 +159,16 @@ struct numbersLine {
 	int nrValues;
 	float value[785];
 };
+
+float sumMatrix(float** matrix, int m ,int n){
+	float sum = 0;
+	for(int i=0;i<m;i++){
+		for(int j=0;j<n;j++){
+			sum += matrix[i][j];
+		}
+	}
+	return sum;
+}
 
 struct initParams getInitParams(){
 	struct initParams x;
@@ -537,7 +551,18 @@ struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2
 // X : (784, 41000)
 // Y : (41000,)
 
-struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float** Y,int xm,int xn,int ym,int yn){
+// --------------------
 
+// one_hot_Y :  (10, 41000)
+// dZ2 : (10, 41000)
+// dW2 : (10, 10)
+// db2 : ()
+// dZ1 : (10, 41000)
+
+struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float** Y,int xm,int xn,int ym,int yn){
+	float** one_hot_y = oneHot(Y,ym);
+	float** dZ2 = substractMatrix(A2,one_hot_y,m,n);
+	float** dW2 = matrixTimesScalar(dotProd(dZ2, getTranspose(A1), m, n, n ,m), (float)1/DATA_SHAPE_M, m, m);
+	float db2 = 1/DATA_SHAPE_M * sumMatrix(dZ2,m,n);
 }
 
