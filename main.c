@@ -30,6 +30,13 @@ struct forwardPropData{
 	float** A2;
 };
 
+struct backwordPropData{
+	float** dW1;
+	float db1;
+	float** dW2;
+	float db2;
+};
+
 float getAccuracy(float *array1, float *array2, int len);
 float **giveMeAMatrixNM(int n, int m);
 float argmax(float *array, int len);
@@ -48,7 +55,7 @@ float *giveMeArrayFromStack(float *array,int len);
 void printArray(float *array, int len);
 void printMatrix(float **matrix, int n, int m);
 float** ReLU(float **array, int x, int y);
-float* ReLU_deriv(float* array, int len);
+float** ReLU_deriv(float** array, int x, int y);
 float** sumMatrixExp(float **array, int m, int n);
 float sumMatrix(float** matrix, int m ,int n);
 float** matrixExp(float **array, int m ,int n);
@@ -60,7 +67,7 @@ struct paramsLayerOne updateParams(float** W1, float** b1,float** W2, float** b2
 float **giveMeARandomMatrixNM(int n, int m);
 struct initParams getInitParams();
 struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2, int m1, int n1, int m2, int n2,float** X,int xm,int xn);
-struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float** Y,int xm,int xn,int ym,int yn);
+struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float* Y,int xm,int xn,int ym);
 
 int main(){
 	float** W1 = giveMeAMatrixNM(3,3);
@@ -85,13 +92,13 @@ int main(){
 		b2[i][0] = i+1;
 	}
 
-	float db1 = 0.5;
-	float db2 = 0.5;
-	float alpha = 0.1;
+	// float db1 = 0.5;
+	// float db2 = 0.5;
+	// float alpha = 0.1;
 
 
-	struct paramsLayerOne test;
-	test = updateParams(W1,b1,W2,b2,3,3,dW1,db1,dW2,db2,alpha);
+	// struct paramsLayerOne test;
+	// test = updateParams(W1,b1,W2,b2,3,3,dW1,db1,dW2,db2,alpha);
 
 	// printf("W1:\n");
 	// printMatrix(test.W1,3,3);
@@ -106,34 +113,64 @@ int main(){
 
 	// struct initParams x = getInitParams();
 	// printMatrix(x.W1,10,784);
-	float** Ww1 = giveMeAMatrixNM(6,6);
-	float** bb1 = giveMeAMatrixNM(6,1);
-	float** Ww2 = giveMeAMatrixNM(6,6);
-	float** bb2 = giveMeAMatrixNM(6,1);
-	float** Xx = giveMeAMatrixNM(6,10);
+	// float** Ww1 = giveMeAMatrixNM(6,6);
+	// float** bb1 = giveMeAMatrixNM(6,1);
+	// float** Ww2 = giveMeAMatrixNM(6,6);
+	// float** bb2 = giveMeAMatrixNM(6,1);
+	// float** Xx = giveMeAMatrixNM(6,10);
 
-	for(int i=0;i<6;i++){
-		bb1[i][0] = (float)(i+1)/10;
-		bb2[i][0] = (float)i+1;
-		for(int j=0;j<6;j++){
-			Ww1[i][j] = (float)(j+1)/10;
-			Ww2[i][j] = (float)(j+1)/10;
-		}
-	}
+	// for(int i=0;i<6;i++){
+	// 	bb1[i][0] = (float)(i+1)/10;
+	// 	bb2[i][0] = (float)i+1;
+	// 	for(int j=0;j<6;j++){
+	// 		Ww1[i][j] = (float)(j+1)/10;
+	// 		Ww2[i][j] = (float)(j+1)/10;
+	// 	}
+	// }
 
-	for(int i=0;i<6;i++){
+	// for(int i=0;i<6;i++){
+	// 	for(int j=0;j<10;j++){
+	// 		Xx[i][j] = (float)(j+1)/10;
+	// 		if( j == 9){
+	// 			Xx[i][j] = (float)0.1;
+	// 		}
+	// 	}
+	// }
+
+	float** z1 = giveMeAMatrixNM(10,10);
+	float** z2 = giveMeAMatrixNM(10,10);
+	float** a1 = giveMeAMatrixNM(10,10);
+	float** a2 = giveMeAMatrixNM(10,10);
+	float** w1 = giveMeAMatrixNM(10,10);
+	float** w2 = giveMeAMatrixNM(10,10);
+	float** x = giveMeAMatrixNM(6,10);
+	float* y = (float*)malloc(sizeof(float)*10);
+	printf("prepare matrixes ... ");
+	for(int i =0; i<10;i++){
+		y[i] = i;
 		for(int j=0;j<10;j++){
-			Xx[i][j] = (float)(j+1)/10;
-			if( j == 9){
-				Xx[i][j] = (float)0.1;
-			}
+				if(i<6){
+					x[i][j] = j;
+				}
+				z1[i][j] = j != 9 ? j+1 : 0;
+				z2[i][j] = j != 9 ? j+1 : 0;
+				a1[i][j] = j != 9 ? j+1 : 0;
+				a2[i][j] = j != 9 ? j+1 : 0;;
+				w1[i][j] = j != 9 ? j+1 : 0;;
+				w2[i][j] = j != 9 ? j+1 : 0;;
 		}
 	}
 
+	printf("matrixes prepared\n");
 
+	struct backwordPropData result = backwordProp(z1,a1,z2,a2,10,10,w1,w2,10,10,x,y,6,10,10);
 
+	printMatrix(result.dW1,10,6);
+	printf("%f\n",result.db1);
+	printMatrix(result.dW2,10,10);
+	printf("%f\n",result.db2);
 
-	struct forwardPropData res = forwardProp(Ww1,bb1,Ww2,bb2,6,6,6,1,Xx,6,10);
+	// struct forwardPropData res = forwardProp(Ww1,bb1,Ww2,bb2,6,6,6,1,Xx,6,10);
 
 	return 0;
 }
@@ -386,13 +423,11 @@ float** ReLU(float **array, int x, int y){
 	return new;
 }
 
-float* ReLU_deriv(float* array, int len){
-		float *new = (float*)malloc(len*sizeof(float));
-	for(int i = 0; i<len;i++){
-		if(array[i] > 0.0){
-			new[i] = 1;
-		}else{
-			new[i] = 0.0;
+float** ReLU_deriv(float** array, int x, int y){
+	float **new = giveMeAMatrixNM(x,y);
+	for(int i=0;i<x;i++){
+		for(int j=0;j<y;j++){
+				new[i][j] = array[i][j] > 0 ? 1 : 0;
 		}
 	}
 	return new;
@@ -412,6 +447,15 @@ float** sumMatrixExp(float **array, int m, int n){
 	return new;
 }
 
+float** matrixTimesMatrix(float **matrix1,float **matrix2, int m ,int n){
+	float** new = giveMeAMatrixNM(m,n);
+	for(int i = 0;i<m;i++){
+		for(int j=0;j<n;j++){
+				new[i][j] = matrix1[i][j] * matrix2[i][j];
+		}
+	}
+	return new;
+}
 float** matrixExp(float **array, int m ,int n){
 	float** new = giveMeAMatrixNM(m,n);
 	for(int i = 0;i<m;i++){
@@ -559,10 +603,20 @@ struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2
 // db2 : ()
 // dZ1 : (10, 41000)
 
-struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float** Y,int xm,int xn,int ym,int yn){
+struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float* Y,int xm,int xn,int ym){
 	float** one_hot_y = oneHot(Y,ym);
+	printMatrix(one_hot_y,ym,ym);
 	float** dZ2 = substractMatrix(A2,one_hot_y,m,n);
-	float** dW2 = matrixTimesScalar(dotProd(dZ2, getTranspose(A1), m, n, n ,m), (float)1/DATA_SHAPE_M, m, m);
-	float db2 = 1/DATA_SHAPE_M * sumMatrix(dZ2,m,n);
+	float** dW2 = matrixTimesScalar(dotProduct(dZ2, getTranspose(A1,m,n), m, n, n ,m), (float)1/DATA_SHAPE_M, m, m);
+	float db2 = 1.0 / DATA_SHAPE_M * sumMatrix(dZ2,m,n);
+	float** dZ1 = matrixTimesMatrix(dotProduct(getTranspose(W2, wm, wn), dZ2,wn,wm,m,n), ReLU_deriv(Z1,m ,n), m,n);
+	float** dW1 = matrixTimesScalar(dotProduct(dZ1, getTranspose(X,xm,xn), m, n, n,m), (float)1/DATA_SHAPE_M, m, m);
+	float db1 = 1.0 / DATA_SHAPE_M * sumMatrix(dZ1,m,n);
+	struct backwordPropData data;
+	data.dW1 = dW1;
+	data.db1 = db1;
+	data.dW2 = dW2;
+	data.db2 = db2;
+	return data;
 }
 
