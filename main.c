@@ -68,6 +68,8 @@ float **giveMeARandomMatrixNM(int n, int m);
 struct initParams getInitParams();
 struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2, int m1, int n1, int m2, int n2,float** X,int xm,int xn);
 struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float* Y,int xm,int xn,int ym);
+float getPredictions(float **array, int m,int n);
+float makePredictions(float** X, int xm,int xn,float** W1, float** b1, float** W2, float** b2,int m1,int n1,int m2,int n2);
 
 int main(){
 	float** W1 = giveMeAMatrixNM(3,3);
@@ -223,6 +225,20 @@ float getAccuracy(float *array1, float *array2, int len){
 		sum += array1[i] == array2[i] ? 1 : 0;
 	}
 	return (float)sum/len;
+}
+
+float getPredictions(float **array, int m,int n){
+	float* inj = (float*)malloc(sizeof(float)*m);
+	for(int i=0;i<m;i++){
+			inj[i] = array[i][0];
+	}
+	return argmax(inj,m);
+}
+
+float makePredictions(float** X, int xm,int xn,float** W1, float** b1, float** W2, float** b2,int m1,int n1,int m2,int n2){
+	struct forwardPropData result = forwardProp(W1, b1, W2, b2, m1, n1, m2, n2,X,xm,xn);
+	float prediction = getPredictions(result.A2,m1,xn);
+	return prediction;
 }
 
 float **giveMeAMatrixNM(int n, int m){
