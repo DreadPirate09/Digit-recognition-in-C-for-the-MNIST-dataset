@@ -7,8 +7,17 @@
 #define DATA_SHAPE_N 785
 
 
-struct dataFromFile;
-struct numbersLine;
+
+struct dataFromFile{
+	char** lines;
+	int nrlines;
+	int nrcols;
+};
+
+struct numbersLine {
+	int nrValues;
+	float value[785];
+};
 struct initParams{
 	float** W1;
 	float** W2;
@@ -70,29 +79,30 @@ struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2
 struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float* Y,int xm,int xn,int ym);
 float getPredictions(float **array, int m);
 float makePredictions(float** X, int xm,int xn,float** W1, float** b1, float** W2, float** b2,int m1,int n1,int m2,int n2);
+struct paramsLayerOne gradientDesccent(float **X, float* Y,float alpha,int iterations,int mx,int nx,int my);
 
 int main(){
-	float** W1 = giveMeAMatrixNM(3,3);
-	float** W2 = giveMeAMatrixNM(3,3);
-	float** dW1 = giveMeAMatrixNM(3,3);
-	float** dW2 = giveMeAMatrixNM(3,3);
+	// float** W1 = giveMeAMatrixNM(3,3);
+	// float** W2 = giveMeAMatrixNM(3,3);
+	// float** dW1 = giveMeAMatrixNM(3,3);
+	// float** dW2 = giveMeAMatrixNM(3,3);
 
-	for(int i=0;i<3;i++){
-		for(int j=0;j<3;j++){
-			W1[i][j] = (j+1);
-			dW1[i][j] = (j+1);
-			W2[i][j] = (j+1);
-			dW2[i][j] = (j+1);
-		}
-	}
+	// for(int i=0;i<3;i++){
+	// 	for(int j=0;j<3;j++){
+	// 		W1[i][j] = (j+1);
+	// 		dW1[i][j] = (j+1);
+	// 		W2[i][j] = (j+1);
+	// 		dW2[i][j] = (j+1);
+	// 	}
+	// }
 
-	float** b1 = giveMeAMatrixNM(3,1);
-	float** b2 = giveMeAMatrixNM(3,1);
+	// float** b1 = giveMeAMatrixNM(3,1);
+	// float** b2 = giveMeAMatrixNM(3,1);
 
-	for(int i=0;i<3;i++){
-		b1[i][0] = i+1;
-		b2[i][0] = i+1;
-	}
+	// for(int i=0;i<3;i++){
+	// 	b1[i][0] = i+1;
+	// 	b2[i][0] = i+1;
+	// }
 
 	// float db1 = 0.5;
 	// float db2 = 0.5;
@@ -139,49 +149,112 @@ int main(){
 	// 	}
 	// }
 
-	float** z1 = giveMeAMatrixNM(10,10);
-	float** z2 = giveMeAMatrixNM(10,10);
-	float** a1 = giveMeAMatrixNM(10,10);
-	float** a2 = giveMeAMatrixNM(10,10);
-	float** w1 = giveMeAMatrixNM(10,10);
-	float** w2 = giveMeAMatrixNM(10,10);
-	float** x = giveMeAMatrixNM(6,10);
-	float* y = (float*)malloc(sizeof(float)*10);
-	printf("prepare matrixes ... ");
-	for(int i =0; i<10;i++){
-		y[i] = i;
-		for(int j=0;j<10;j++){
-				if(i<6){
-					x[i][j] = j;
-				}
-				z1[i][j] = j != 9 ? j+1 : 0;
-				z2[i][j] = j != 9 ? j+1 : 0;
-				a1[i][j] = j != 9 ? j+1 : 0;
-				a2[i][j] = j != 9 ? j+1 : 0;;
-				w1[i][j] = j != 9 ? j+1 : 0;;
-				w2[i][j] = j != 9 ? j+1 : 0;;
+	// float** z1 = giveMeAMatrixNM(10,10);
+	// float** z2 = giveMeAMatrixNM(10,10);
+	// float** a1 = giveMeAMatrixNM(10,10);
+	// float** a2 = giveMeAMatrixNM(10,10);
+	// float** w1 = giveMeAMatrixNM(10,10);
+	// float** w2 = giveMeAMatrixNM(10,10);
+	// float** x = giveMeAMatrixNM(6,10);
+	// float* y = (float*)malloc(sizeof(float)*10);
+	// printf("prepare matrixes ... ");
+	// for(int i =0; i<10;i++){
+	// 	y[i] = i;
+	// 	for(int j=0;j<10;j++){
+	// 			if(i<6){
+	// 				x[i][j] = j;
+	// 			}
+	// 			z1[i][j] = j != 9 ? j+1 : 0;
+	// 			z2[i][j] = j != 9 ? j+1 : 0;
+	// 			a1[i][j] = j != 9 ? j+1 : 0;
+	// 			a2[i][j] = j != 9 ? j+1 : 0;;
+	// 			w1[i][j] = j != 9 ? j+1 : 0;;
+	// 			w2[i][j] = j != 9 ? j+1 : 0;;
+	// 	}
+	// }
+
+	// printf("matrixes prepared\n");
+
+	// struct backwordPropData result = backwordProp(z1,a1,z2,a2,10,10,w1,w2,10,10,x,y,6,10,10);
+
+	// printMatrix(result.dW1,10,6);
+	// printf("%f\n",result.db1);
+	// printMatrix(result.dW2,10,10);
+	// printf("%f\n",result.db2);
+
+	// // struct forwardPropData res = forwardProp(Ww1,bb1,Ww2,bb2,6,6,6,1,Xx,6,10);
+
+	// float** predictionList = giveMeAMatrixNM(10,1);
+	// predictionList[0][0] = 4.32969381e-07;
+	// predictionList[1][0] = 9.73976793e-01;
+	// predictionList[2][0] = 3.55005386e-03;
+	// predictionList[3][0] = 4.33718600e-03;
+
+	// printf("Prediction: [%d]",(int)getPredictions(predictionList,4));
+
+	struct dataFromFile dff = readTrain();
+	struct numbersLine* numbers = matrixFromStringToFloat(dff);
+	for(int i=0;i<DATA_SHAPE_M;i++){
+		printf("%f\n",numbers[i].value[0]);
+	}
+
+	float** data_dev = giveMeAMatrixNM(1000,DATA_SHAPE_N);
+	for(int i=0;i<1000;i++){
+		for(int j=0;j<DATA_SHAPE_N;j++){
+			data_dev[i][j] = numbers[i].value[j];
+		}
+	}
+	float** data_dev_T = giveMeAMatrixNM(DATA_SHAPE_N,1000);
+	data_dev_T = getTranspose(data_dev,1000,DATA_SHAPE_N);
+	int data_dev_T_M = DATA_SHAPE_N;
+	int data_dev_T_N = 1000;
+
+	float* Y_dev = (float*)malloc(sizeof(float)*data_dev_T_N);
+	for(int i=0;i<data_dev_T_N;i++){
+		Y_dev[i] = data_dev_T[0][i];
+	}
+
+	printf("Y_dev shape: [%d]\n",data_dev_T_N);
+
+	float** X_dev = giveMeAMatrixNM(data_dev_T_M-1,DATA_SHAPE_N);
+	for(int i=0;i<data_dev_T_M-1;i++){
+		for(int j=0;j<data_dev_T_N;j++){
+			X_dev[i][j] = data_dev_T[i+1][j];
+			X_dev[i][j] = X_dev[i][j] / 255.0;
+		}
+	}
+	printf("X_dev shape: [%d %d]\n",data_dev_T_M-1,data_dev_T_N);
+
+
+	float** data_train = giveMeAMatrixNM(DATA_SHAPE_M-1000,DATA_SHAPE_N);
+	for(int i=0;i<DATA_SHAPE_M-1000;i++){
+		for(int j=0;j<DATA_SHAPE_N;j++){
+			data_train[i][j] = numbers[i+1000].value[j];
+		}
+	}
+	float** data_train_T = giveMeAMatrixNM(DATA_SHAPE_N,DATA_SHAPE_M-1000);
+	data_train_T = getTranspose(data_train,DATA_SHAPE_M-1000,DATA_SHAPE_N);
+	int data_train_T_M = DATA_SHAPE_N;
+	int data_train_T_N = DATA_SHAPE_M-1000;
+
+	float* Y_train = (float*)malloc(sizeof(float)*data_train_T_N);
+	for(int i=0;i<data_train_T_N;i++){
+		Y_train[i] = data_train_T[0][i];
+	}
+	printf("Y_train shape: [%d]\n",data_train_T_N);
+
+	float** X_train = giveMeAMatrixNM(data_train_T_M-1,data_train_T_N);
+	for(int i=0;i<data_train_T_M-1;i++){
+		for(int j=0;j<data_train_T_N;j++){
+			X_train[i][j] = data_train_T[i+1][j];
+			X_train[i][j] = X_train[i][j] / 255.0;
 		}
 	}
 
-	printf("matrixes prepared\n");
+	printf("X_train shape: [%d %d]\n",data_train_T_M-1,data_train_T_N);
 
-	struct backwordPropData result = backwordProp(z1,a1,z2,a2,10,10,w1,w2,10,10,x,y,6,10,10);
 
-	printMatrix(result.dW1,10,6);
-	printf("%f\n",result.db1);
-	printMatrix(result.dW2,10,10);
-	printf("%f\n",result.db2);
-
-	// struct forwardPropData res = forwardProp(Ww1,bb1,Ww2,bb2,6,6,6,1,Xx,6,10);
-
-	float** predictionList = giveMeAMatrixNM(10,1);
-	predictionList[0][0] = 4.32969381e-07;
-	predictionList[1][0] = 9.73976793e-01;
-	predictionList[2][0] = 3.55005386e-03;
-	predictionList[3][0] = 4.33718600e-03;
-
-	printf("Prediction: [%d]",(int)getPredictions(predictionList,4));
-
+	struct paramsLayerOne yep = gradientDesccent(X_train,Y_train,0.10,500,data_train_T_M-1,data_train_T_N,data_train_T_N);
 	return 0;
 }
 
@@ -194,18 +267,6 @@ int main(){
 // =================================================================================================================================================================
 
 
-
-
-struct dataFromFile{
-	char** lines;
-	int nrlines;
-	int nrcols;
-};
-
-struct numbersLine {
-	int nrValues;
-	float value[785];
-};
 
 float sumMatrix(float** matrix, int m ,int n){
 	float sum = 0;
@@ -363,7 +424,6 @@ float** matrixTimesScalarArray(float** matrix, float* scalar, int m, int n){
 struct numbersLine* matrixFromStringToFloat(struct dataFromFile DF){
 	struct numbersLine* nrValues = malloc(sizeof(struct numbersLine) * DF.nrlines);
 	for(int i=1;i<DF.nrlines;i++){
-		printf("enter in the loop\n");
 		nrValues[i] = transformCSVNumbersToFloatsArray(DF.lines[i], DF.nrcols);
 		printf("%lf\n",nrValues[i].value[10]);
 	}
@@ -548,12 +608,9 @@ struct dataFromFile readTrain(){
 	dff.lines = (char**)malloc(sizeof(char*)*42004);
 
 	while ((read = getline(&line, &len, fp)) != -1) {
-		printf("Start while\n");
         dff.lines[dff.nrlines] = (char*)malloc(sizeof(char)*read+1);
         strncpy(dff.lines[dff.nrlines],line,read);
-        printf("here we go\n");
         dff.lines[dff.nrlines][read] = '\0';
-        printf("PA\n");
         dff.nrcols = read;
         dff.nrlines++;
     }
@@ -592,22 +649,10 @@ struct paramsLayerOne updateParams(float** W1, float** b1,float** W2, float** b2
 struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2, int m1, int n1, int m2, int n2,float** X,int xm,int xn){
 	struct forwardPropData result;
 
-	printMatrix(W1,m1,n1);
-	printMatrix(b1,m2,n2);
-	printMatrix(W2,m1,m1);
-	printMatrix(b2,m2,n2);
-
 	result.Z1 = addMatrix(dotProduct(W1,X,m1,n1,xm,xn),b1,m1,xn,m1,1);
-	printf("This is the Z1 :\n");
-	printMatrix(result.Z1,m1,xn);
 	result.A1 = ReLU(result.Z1,m1,xn);
-	printf("This is the A1 :\n");
-	printMatrix(result.A1,m1,xn);
 	result.Z2 = addMatrix(dotProduct(W2, result.A1,m1,m1,m1,xn),b2,m1,xn,m1,1);
-	printf("This is the Z2 :\n");
-	printMatrix(result.Z2,m1,xn);
 	result.A2 = softMax(result.Z2, xm,xn);
-	printMatrix(result.A2, m1,xn);
 
 	return result;
 }
@@ -633,7 +678,6 @@ struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2
 
 struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float* Y,int xm,int xn,int ym){
 	float** one_hot_y = oneHot(Y,ym);
-	printMatrix(one_hot_y,ym,ym);
 	float** dZ2 = substractMatrix(A2,one_hot_y,m,n);
 	float** dW2 = matrixTimesScalar(dotProduct(dZ2, getTranspose(A1,m,n), m, n, n ,m), (float)1/DATA_SHAPE_M, m, m);
 	float db2 = 1.0 / DATA_SHAPE_M * sumMatrix(dZ2,m,n);
@@ -648,3 +692,20 @@ struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A
 	return data;
 }
 
+
+struct paramsLayerOne gradientDesccent(float **X, float* Y,float alpha,int iterations,int mx,int nx,int my){
+	struct initParams initValues = getInitParams();
+	struct paramsLayerOne result;
+	result.W1 = initValues.W1;
+	result.W2 = initValues.W2;
+	result.b1 = initValues.b1;
+	result.b2 = initValues.b2;
+	for(int i=0;i<iterations;i++){
+		printf("The sizes choosed:\n");
+		printf("W1 size: %d %d, b1 size: %d, W2 size: %d %d, b2 size: %d, X size: %d %d",mx,nx,mx,nx,mx,nx);
+		struct forwardPropData forwardData = forwardProp(result.W1, result.b1, result.W2, result.b2, 10, mx, 10, 10,X,mx,nx);
+		struct backwordPropData backwordData = backwordProp(forwardData.Z1,forwardData.A1,forwardData.Z2,forwardData.A2,mx,nx,result.W1,result.W2,mx,nx,X,Y,mx,nx,my);
+		result = updateParams(result.W1,result.b1,result.W2, result.b2, mx, nx, backwordData.dW1, backwordData.db1, backwordData.dW2, backwordData.db2, alpha);
+	}
+	return result;
+}
