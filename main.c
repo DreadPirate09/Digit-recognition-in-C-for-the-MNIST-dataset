@@ -68,7 +68,7 @@ float **giveMeARandomMatrixNM(int n, int m);
 struct initParams getInitParams();
 struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2, int m1, int n1, int m2, int n2,float** X,int xm,int xn);
 struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float* Y,int xm,int xn,int ym);
-float getPredictions(float **array, int m,int n);
+float getPredictions(float **array, int m);
 float makePredictions(float** X, int xm,int xn,float** W1, float** b1, float** W2, float** b2,int m1,int n1,int m2,int n2);
 
 int main(){
@@ -174,6 +174,14 @@ int main(){
 
 	// struct forwardPropData res = forwardProp(Ww1,bb1,Ww2,bb2,6,6,6,1,Xx,6,10);
 
+	float** predictionList = giveMeAMatrixNM(10,1);
+	predictionList[0][0] = 4.32969381e-07;
+	predictionList[1][0] = 9.73976793e-01;
+	predictionList[2][0] = 3.55005386e-03;
+	predictionList[3][0] = 4.33718600e-03;
+
+	printf("Prediction: [%d]",(int)getPredictions(predictionList,4));
+
 	return 0;
 }
 
@@ -227,7 +235,7 @@ float getAccuracy(float *array1, float *array2, int len){
 	return (float)sum/len;
 }
 
-float getPredictions(float **array, int m,int n){
+float getPredictions(float **array, int m){
 	float* inj = (float*)malloc(sizeof(float)*m);
 	for(int i=0;i<m;i++){
 			inj[i] = array[i][0];
@@ -237,7 +245,7 @@ float getPredictions(float **array, int m,int n){
 
 float makePredictions(float** X, int xm,int xn,float** W1, float** b1, float** W2, float** b2,int m1,int n1,int m2,int n2){
 	struct forwardPropData result = forwardProp(W1, b1, W2, b2, m1, n1, m2, n2,X,xm,xn);
-	float prediction = getPredictions(result.A2,m1,xn);
+	float prediction = getPredictions(result.A2,m1);
 	return prediction;
 }
 
@@ -266,10 +274,14 @@ float **giveMeARandomMatrixNM(int n, int m){
 
 float argmax(float *array, int len){
 	float max = 0;
+	float index = 0;
 	for(int i=0;i<len;i++){
-		max = array[i] > max ? array[i] : max;
+		if(max<array[i]){
+			max = array[i];
+			index = i;
+		}
 	}
-	return max;
+	return index;
 }
 
 float getNumber(char* str, int len){
