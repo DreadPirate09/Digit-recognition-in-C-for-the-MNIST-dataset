@@ -702,7 +702,8 @@ struct paramsLayerOne gradientDesccent(float **X, float* Y,float alpha,int itera
 	result.b2 = initValues.b2;
 	for(int i=0;i<iterations;i++){
 		printf("The sizes choosed:\n");
-		printf("W1 size: %d %d, b1 size: %d, W2 size: %d %d, b2 size: %d, X size: %d %d",mx,nx,mx,nx,mx,nx);
+		printf("W1 size: %d %d,\n b1 size: %d %d,\n W2 size: %d %d,\n b2 size: %d %d,\n X size: %d %d",10,mx,10,1,10,10,10,1,mx,nx);
+		// float** W1, float**b1, float** W2, float** b2, int m1, int n1, int m2, int n2,float** X,int xm,int xn
 		struct forwardPropData forwardData = forwardProp(result.W1, result.b1, result.W2, result.b2, 10, mx, 10, 10,X,mx,nx);
 		struct backwordPropData backwordData = backwordProp(forwardData.Z1,forwardData.A1,forwardData.Z2,forwardData.A2,mx,nx,result.W1,result.W2,mx,nx,X,Y,mx,nx,my);
 		result = updateParams(result.W1,result.b1,result.W2, result.b2, mx, nx, backwordData.dW1, backwordData.db1, backwordData.dW2, backwordData.db2, alpha);
