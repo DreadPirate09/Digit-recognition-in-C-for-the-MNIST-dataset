@@ -554,12 +554,14 @@ float** matrixExp(float **array, int m ,int n){
 	return new;
 }
 
-float** softMax(float **array, int m, int n){
-	float** new = (float**)malloc(m*sizeof(float*));
+float** softMax(float **array, int m, int n){\
+	printf("entering softMax\n");
+	float** new = giveMeAMatrixNM(m,n);
 	float** matrix_Exp = matrixExp(array,m,n);
+	printf("entering matrixExp\n");
 	float** sum_Matrix_Exp = sumMatrixExp(array,m,n);
+	printf("entering sumMatrixExp\n");
 	for(int i=0;i<m;i++){
-		new[i] = (float*)malloc(n*sizeof(float));
 		for(int j = 0; j < n; j++){
 			new[i][j] = matrix_Exp[i][j]/sum_Matrix_Exp[0][j];
 		}
@@ -650,9 +652,13 @@ struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2
 	struct forwardPropData result;
 
 	result.Z1 = addMatrix(dotProduct(W1,X,m1,n1,xm,xn),b1,m1,xn,m1,1);
+	printf("addMatrix.. ");
 	result.A1 = ReLU(result.Z1,m1,xn);
+	printf("reLu.. ");
 	result.Z2 = addMatrix(dotProduct(W2, result.A1,m1,m1,m1,xn),b2,m1,xn,m1,1);
+	printf("addMatrix.. ");
 	result.A2 = softMax(result.Z2, xm,xn);
+	printf("softMax.. ");
 
 	return result;
 }
@@ -677,6 +683,15 @@ struct forwardPropData forwardProp(float** W1, float**b1, float** W2, float** b2
 // dZ1 : (10, 41000)
 
 struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A2,int m,int n,float** W1,float**W2,int wm,int wn,float** X,float* Y,int xm,int xn,int ym){
+	printf("BackwordProp :\n");
+	printf("Z1 : %d %d\n",m,n);
+	printf("A1 : %d %d\n",m,n);
+	// printf("Z2 : %f %f\n");
+	printf("A2 : %d %d\n",m,n);
+	// printf("W1 : %f %f\n");
+	printf("W2 : %d %d\n",wm,wn);
+	printf("X : %d %d\n",xm,xn);
+	printf("Y : %d\n",ym);
 	float** one_hot_y = oneHot(Y,ym);
 	float** dZ2 = substractMatrix(A2,one_hot_y,m,n);
 	float** dW2 = matrixTimesScalar(dotProduct(dZ2, getTranspose(A1,m,n), m, n, n ,m), (float)1/DATA_SHAPE_M, m, m);
@@ -696,6 +711,9 @@ struct backwordPropData backwordProp(float** Z1,float ** A1,float** Z2,float** A
 struct paramsLayerOne gradientDesccent(float **X, float* Y,float alpha,int iterations,int mx,int nx,int my){
 	struct initParams initValues = getInitParams();
 	struct paramsLayerOne result;
+	struct paramsLayerOne resultFree;
+	struct forwardPropData forwardData;
+	struct backwordPropData backwordData;
 	result.W1 = initValues.W1;
 	result.W2 = initValues.W2;
 	result.b1 = initValues.b1;
@@ -704,9 +722,21 @@ struct paramsLayerOne gradientDesccent(float **X, float* Y,float alpha,int itera
 		printf("The sizes choosed:\n");
 		printf("W1 size: %d %d,\n b1 size: %d %d,\n W2 size: %d %d,\n b2 size: %d %d,\n X size: %d %d",10,mx,10,1,10,10,10,1,mx,nx);
 		// float** W1, float**b1, float** W2, float** b2, int m1, int n1, int m2, int n2,float** X,int xm,int xn
-		struct forwardPropData forwardData = forwardProp(result.W1, result.b1, result.W2, result.b2, 10, mx, 10, 10,X,mx,nx);
-		struct backwordPropData backwordData = backwordProp(forwardData.Z1,forwardData.A1,forwardData.Z2,forwardData.A2,mx,nx,result.W1,result.W2,mx,nx,X,Y,mx,nx,my);
+		free(forwardData.Z1);
+		free(forwardData.A1);
+		free(forwardData.Z2);
+		free(forwardData.A2);
+		forwardData = forwardProp(result.W1, result.b1, result.W2, result.b2, 10, mx, 10, 10,X,mx,nx);
+		printf("forwardProp done\n");
+		free(backwordData.dW1);
+		free(backwordData.dW2);
+		free(resultFree.W1);
+		free(resultFree.W2);
+		free(resultFree.b1);
+		free(resultFree.b2);
+		backwordData = backwordProp(forwardData.Z1,forwardData.A1,forwardData.Z2,forwardData.A2,mx,nx,result.W1,result.W2,mx,nx,X,Y,mx,nx,my);
 		result = updateParams(result.W1,result.b1,result.W2, result.b2, mx, nx, backwordData.dW1, backwordData.db1, backwordData.dW2, backwordData.db2, alpha);
+		resultFree = result;
 	}
 	return result;
 }
