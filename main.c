@@ -4,7 +4,7 @@
 #include<string.h>
 #include<time.h>
 #define DATA_SHAPE_M 42000
-#define DATA_SHAPE_N 785
+#define DATA_SHAPE_N 784
 
 
 
@@ -82,117 +82,11 @@ float makePredictions(float** X, int xm,int xn,float** W1, float** b1, float** W
 struct paramsLayerOne gradientDesccent(float **X, float* Y,float alpha,int iterations,int mx,int nx,int my);
 
 int main(){
-	// float** W1 = giveMeAMatrixNM(3,3);
-	// float** W2 = giveMeAMatrixNM(3,3);
-	// float** dW1 = giveMeAMatrixNM(3,3);
-	// float** dW2 = giveMeAMatrixNM(3,3);
-
-	// for(int i=0;i<3;i++){
-	// 	for(int j=0;j<3;j++){
-	// 		W1[i][j] = (j+1);
-	// 		dW1[i][j] = (j+1);
-	// 		W2[i][j] = (j+1);
-	// 		dW2[i][j] = (j+1);
-	// 	}
-	// }
-
-	// float** b1 = giveMeAMatrixNM(3,1);
-	// float** b2 = giveMeAMatrixNM(3,1);
-
-	// for(int i=0;i<3;i++){
-	// 	b1[i][0] = i+1;
-	// 	b2[i][0] = i+1;
-	// }
-
-	// float db1 = 0.5;
-	// float db2 = 0.5;
-	// float alpha = 0.1;
-
-
-	// struct paramsLayerOne test;
-	// test = updateParams(W1,b1,W2,b2,3,3,dW1,db1,dW2,db2,alpha);
-
-	// printf("W1:\n");
-	// printMatrix(test.W1,3,3);
-	// printf("b1:\n");
-	// printMatrix(test.b1,3,1);
-	// printf("W2:\n");
-	// printMatrix(test.W2,3,3);
-	// printf("Wb2:\n");
-	// printMatrix(test.b2,3,1);
-	
-	// printMatrix(giveMeARandomMatrixNM(10,10),10,10);
-
-	// struct initParams x = getInitParams();
-	// printMatrix(x.W1,10,784);
-	// float** Ww1 = giveMeAMatrixNM(6,6);
-	// float** bb1 = giveMeAMatrixNM(6,1);
-	// float** Ww2 = giveMeAMatrixNM(6,6);
-	// float** bb2 = giveMeAMatrixNM(6,1);
-	// float** Xx = giveMeAMatrixNM(6,10);
-
-	// for(int i=0;i<6;i++){
-	// 	bb1[i][0] = (float)(i+1)/10;
-	// 	bb2[i][0] = (float)i+1;
-	// 	for(int j=0;j<6;j++){
-	// 		Ww1[i][j] = (float)(j+1)/10;
-	// 		Ww2[i][j] = (float)(j+1)/10;
-	// 	}
-	// }
-
-	// for(int i=0;i<6;i++){
-	// 	for(int j=0;j<10;j++){
-	// 		Xx[i][j] = (float)(j+1)/10;
-	// 		if( j == 9){
-	// 			Xx[i][j] = (float)0.1;
-	// 		}
-	// 	}
-	// }
-
-	// float** z1 = giveMeAMatrixNM(10,10);
-	// float** z2 = giveMeAMatrixNM(10,10);
-	// float** a1 = giveMeAMatrixNM(10,10);
-	// float** a2 = giveMeAMatrixNM(10,10);
-	// float** w1 = giveMeAMatrixNM(10,10);
-	// float** w2 = giveMeAMatrixNM(10,10);
-	// float** x = giveMeAMatrixNM(6,10);
-	// float* y = (float*)malloc(sizeof(float)*10);
-	// printf("prepare matrixes ... ");
-	// for(int i =0; i<10;i++){
-	// 	y[i] = i;
-	// 	for(int j=0;j<10;j++){
-	// 			if(i<6){
-	// 				x[i][j] = j;
-	// 			}
-	// 			z1[i][j] = j != 9 ? j+1 : 0;
-	// 			z2[i][j] = j != 9 ? j+1 : 0;
-	// 			a1[i][j] = j != 9 ? j+1 : 0;
-	// 			a2[i][j] = j != 9 ? j+1 : 0;;
-	// 			w1[i][j] = j != 9 ? j+1 : 0;;
-	// 			w2[i][j] = j != 9 ? j+1 : 0;;
-	// 	}
-	// }
-
-	// printf("matrixes prepared\n");
-
-	// struct backwordPropData result = backwordProp(z1,a1,z2,a2,10,10,w1,w2,10,10,x,y,6,10,10);
-
-	// printMatrix(result.dW1,10,6);
-	// printf("%f\n",result.db1);
-	// printMatrix(result.dW2,10,10);
-	// printf("%f\n",result.db2);
-
-	// // struct forwardPropData res = forwardProp(Ww1,bb1,Ww2,bb2,6,6,6,1,Xx,6,10);
-
-	// float** predictionList = giveMeAMatrixNM(10,1);
-	// predictionList[0][0] = 4.32969381e-07;
-	// predictionList[1][0] = 9.73976793e-01;
-	// predictionList[2][0] = 3.55005386e-03;
-	// predictionList[3][0] = 4.33718600e-03;
-
-	// printf("Prediction: [%d]",(int)getPredictions(predictionList,4));
 
 	struct dataFromFile dff = readTrain();
+	printf("%s",dff.lines[0]);
+	printf("%s",dff.lines[1]);
+	printf("%s",dff.lines[2]);
 	struct numbersLine* numbers = matrixFromStringToFloat(dff);
 	for(int i=0;i<DATA_SHAPE_M;i++){
 		printf("%f\n",numbers[i].value[0]);
@@ -346,6 +240,7 @@ float argmax(float *array, int len){
 }
 
 float getNumber(char* str, int len){
+	printf("We in the getNumber function, str: %s, len: %d",str,len);
 	float number = 0.0;
 	for(int i=0;i<len;i++){
 		number = number * 10 + str[i]-'0';
@@ -355,7 +250,7 @@ float getNumber(char* str, int len){
 
 struct numbersLine transformCSVNumbersToFloatsArray(char* line, int len){
 	printf("transform\n");
-	//this si ment to be done on a training set with the shape of 42000x785 so we have min 785x3 size of characters that should be feed to the array 
+	//this si ment to be done on a training set with the shape of 42000x784 so we have min 784x3 size of characters that should be feed to the array 
 	char new[785][3];
 	struct numbersLine nrValues;
 	nrValues.nrValues = 0;
@@ -368,9 +263,13 @@ struct numbersLine transformCSVNumbersToFloatsArray(char* line, int len){
 		nr++;
 		chunk = strtok(NULL,",");
 	}
+	nr--;
 	nrValues.nrValues = nr;
+	printf("The nr values is :%d",nr);
 	for(int i=0;i<nr;i++){
+		// printf("This is the new[i]: %s",new[i]);
 		nrValues.value[i] = getNumber(new[i],strlen(new[i]));
+		// printf("transforming the str to the nr : %f",nrValues.value[i]);
 	}
 	return nrValues;
 }
@@ -425,7 +324,7 @@ struct numbersLine* matrixFromStringToFloat(struct dataFromFile DF){
 	struct numbersLine* nrValues = malloc(sizeof(struct numbersLine) * DF.nrlines);
 	for(int i=1;i<DF.nrlines;i++){
 		nrValues[i] = transformCSVNumbersToFloatsArray(DF.lines[i], DF.nrcols);
-		printf("%lf\n",nrValues[i].value[10]);
+		// printf("%lf\n",nrValues[i].value[10]);
 	}
 	return nrValues;
 }
