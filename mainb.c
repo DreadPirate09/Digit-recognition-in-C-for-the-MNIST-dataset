@@ -1,103 +1,91 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<math.h>
-#include<string.h>
-#include<time.h>
-#define DATA_SHAPE_M 42000
-#define DATA_SHAPE_N 784
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#define NUM_PIXELS 784
 
-struct Numbers {
-	int val;
-	int pixels[DATA_SHAPE_M];
-};
+typedef struct {
+    int value;
+    int pixels[NUM_PIXELS];
+} Number;
 
-// struct Numbers readTrain(){
-// 	printf("read the dataset\n");
-// 	FILE* fp = NULL;
-// 	struct Numbers nrs;
-
-// 	char* line = NULL;
-// 	size_t len = 0;
-// 	ssize_t read;
-
-// 	printf("Try to open\n");
-// 	fp = fopen("train.csv","r");
-// 	printf("Opened\n");
-// 	if(fp == NULL){
-// 		printf("The file is open somewhere else\n");
-// 		exit(1);
-// 	}
-
-// 	int nrlines = 0;
-
-// 	while ((read = getline(&line, &len, fp)) != -1) {
-// 		if(nrlines != 0){
-// 	        nrs.val[dff.nrlines] = (char*)malloc(sizeof(char)*read+1);
-// 	        strncpy(dff.lines[dff.nrlines],line,read);
-// 	        dff.lines[dff.nrlines][read] = '\0';
-// 	        printf("The nr cols is : %d",read);
-// 	        nrlines++;
-// 		} else {
-// 			nrlines++;
-// 		}
-//     }
-
-//     printf("Done with the while\n");
-//     fclose(fp);
-//     if (line)
-//         free(line);
-//     printf("Done!\n");
-//     return dff;
-// }
-
-int getStrRetNumbers(char* line){
-	char *pch;
-	int vals[784];
-
-	pch = strtok(line,",");
-	int i = 0;
-	while(pch != NULL){
-		vals[i++] = stringToInt(pch);
-		pch = strtok(NULL,",");
-	}
-	return vals;
-}
-
-int stringToInt(const char *str) {
-    int result = 0;
-    int sign = 1; // To handle negative numbers
-    int i = 0;
-
-    // Skip leading whitespaces
-    while (str[i] == ' ') {
-        i++;
+Number* read_csv(const char* filename, int* num_records) {
+    FILE* file = fopen(filename, "r");
+    if (!file) {
+        perror("Error opening file");
+        return NULL;
     }
 
-    // Check for sign
-    if (str[i] == '-' || str[i] == '+') {
-        if (str[i] == '-') {
-            sign = -1;
-        }
-        i++;
+    char buffer[16032];
+
+    // Skip header line
+    if (!fgets(buffer, sizeof(buffer), file)) {
+        fclose(file);
+        fprintf(stderr, "Empty file\n");
+        return NULL;
     }
 
-    // Convert characters to integer
-    while (str[i] != '\0') {
-        if (!isdigit(str[i])) {
-            // If the character is not a digit, stop parsing
-            break;
+    // First pass to count records
+    int count = 0;
+    while (fgets(buffer, sizeof(buffer), file)) count++;
+    rewind(file);
+    *num_records = count;
+
+    Number* numbers = malloc(count * sizeof(Number));
+    if (!numbers) {
+        fclose(file);
+        perror("Memory allocation failed");
+        return NULL;
+    }
+
+    // Skip header again
+    fgets(buffer, sizeof(buffer), file);
+
+    for (int i = 0; i < count; i++) {
+        if (!fgets(buffer, sizeof(buffer), file)) {
+            fprintf(stderr, "Error reading line %d\n", i+2);
+            free(numbers);
+            fclose(file);
+            return NULL;
         }
 
-        result = result * 10 + (str[i] - '0');
-        i++;
+        char* token = strtok(buffer, ",");
+        if (!token) {
+            fprintf(stderr, "Invalid format in line %d\n", i+2);
+            free(numbers);
+            fclose(file);
+            return NULL;
+        }
+
+        numbers[i].value = atoi(token);
+
+        for (int j = 0; j < NUM_PIXELS; j++) {
+            token = strtok(NULL, ",");
+            if (!token) {
+                fprintf(stderr, "Missing pixel data in line %d\n", i+2);
+                free(numbers);
+                fclose(file);
+                return NULL;
+            }
+            numbers[i].pixels[j] = atoi(token);
+        }
     }
 
-    return result * sign;
+    fclose(file);
+    return numbers;
 }
 
 
-void main(){
-	char *c = "asdasd,123,2,2";
-	printf("%d",stringToInt(c));
+int main(){
+    const char *c = "train.csv";
+    int num_records;
+    Number *data = read_csv(c,&num_records);
+
+    if (data) {
+        printf("Successfully read %d records\n", num_records);   
+        printf("First digit: %d\n", data[123].value);
+        printf("First pixel value: %d\n", data[123].pixels[0]);  
+        free(data);
+    }
+    return 0;
 }
