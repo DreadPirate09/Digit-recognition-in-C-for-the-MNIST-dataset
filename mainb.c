@@ -85,7 +85,27 @@ int main(){
         printf("Successfully read %d records\n", num_records);   
         printf("First digit: %d\n", data[123].value);
         printf("First pixel value: %d\n", data[123].pixels[0]);  
-        free(data);
+        // free(data);
     }
+
+    int *x_train = malloc(sizeof(int)* num_records);
+    int **y_train = (int**)malloc(sizeof(int)* num_records);
+    if (x_train == NULL || y_train == NULL){
+        printf("Memory alocation failed");
+    }
+    for (int i=0;i<num_records;i++){
+        y_train[i] = (int*)malloc(sizeof(int)* NUM_PIXELS);
+        x_train[i] = data[i].value;
+        for(int j=0;j<NUM_PIXELS;j++){
+            y_train[i][j] = data[i].pixels[j];
+        }
+    }
+
+    printf("DONE");
+
+    free(data);
+    free(x_train);
+    free(y_train);
+
     return 0;
 }
