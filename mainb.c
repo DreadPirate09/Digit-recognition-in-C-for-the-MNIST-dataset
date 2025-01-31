@@ -68,12 +68,14 @@ void freeInitParams(struct initParams ip){
         free(ip.b1[i]);
         free(ip.b2[i]);
     }
+    printf("Done freeing the memory for the params\n");
 }
 
 void freeMatrix(float **matrix, int lines){
     for(int i=0;i<lines;i++){
         free(matrix[i]);
     }
+    printf("Done freeing the matrix");
 }
 
 Number* read_csv(const char* filename, int* num_records) {
@@ -184,6 +186,11 @@ int main() {
             x_train[i][j] = data[i].pixels[j] / 255.0;
         }
     }
+
+    struct initParams iP = getInitParams();
+    printf("Init params done\n");
+    printf("some sample of the W1 : %lf\n",iP.W1[2][2]);
+    freeInitParams(iP);
 
     printf("Some random pixels vals from the x_train %lf %lf %lf\n",x_train[23][242],x_train[55][231],x_train[77][432]);
 
