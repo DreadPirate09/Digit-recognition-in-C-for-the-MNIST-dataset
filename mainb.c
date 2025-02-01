@@ -17,6 +17,13 @@ struct initParams{
     float** b2;
 };
 
+struct oneLayer{
+    float** W1;
+    float** W2;
+    float** b1;
+    float** b2;
+}
+
 float **giveMeARandomMatrixNM(int n, int m){
     float ** matrix = (float**)malloc(n*sizeof(float*));
     srand(time(NULL));
@@ -76,6 +83,17 @@ void freeMatrix(float **matrix, int lines){
         free(matrix[i]);
     }
     printf("Done freeing the matrix");
+}
+
+// (X, Y, alpha, iterations)
+struct initParams gradientDescent(float *x_train, float **y_train, float alpha, int iterations){
+    // hloding the iP.W1, iP.b1, iP.W2, iP.b2
+    struct initParams iP = getInitParams();
+    for(int i=0; i<iterations ;i++){
+        // Z1, A1, Z2, A2 = forward_prop(W1, b1, W2, b2, X)
+
+    }
+
 }
 
 Number* read_csv(const char* filename, int* num_records) {
