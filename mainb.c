@@ -10,7 +10,8 @@
 #define LR 0.01
 #define ITERATIONS 500
 #define DATA_SIZE 42000
-#define TEST_SIZE 20000
+// 20% from the total data size
+#define TEST_SIZE 8400
 #define NUM_PIXELS 784
 
 typedef struct {
@@ -188,7 +189,7 @@ void train(double *X, double *Y, double *W1, double *b1, double *W2, double *b2,
             backward_prop(Z1, A1, Z2, A2, W2, xi, target, dW1, db1, dW2, db2);
             update_params(W1, b1, W2, b2, dW1, db1, dW2, db2);
         }
-        if (epoch % 10 == 0) {
+        if (epoch % 5 == 0) {
             int pred = get_prediction(A2);
             int pred_test[TEST_SIZE];
             // lets do prediction for the last 20k labels that we're not used
