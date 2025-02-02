@@ -4,16 +4,15 @@
 #include <time.h>
 #include <string.h>
 
-#define INPUT_SIZE 784
+#define INPUT_SIZE  784
 #define HIDDEN_SIZE 10
 #define OUTPUT_SIZE 10
-#define LR 0.01
-#define ITERATIONS 500
-#define DATA_SIZE 42000
-// 20% from the total data size
-#define DEV_SIZE 33600
-#define TEST_SIZE 8400
-#define NUM_PIXELS 784
+#define LR          0.01
+#define ITERATIONS  500
+#define DATA_SIZE   42000
+#define DEV_SIZE    33600
+#define TEST_SIZE   8400
+#define NUM_PIXELS  784
 
 typedef struct {
     int value;
@@ -38,12 +37,19 @@ void ReLU(double *Z, int size) {
 
 void softmax(double *Z, double *A, int size) {
     double sum_exp = 0.0;
+    printf("This is z : \n");
     for (int i = 0; i < size; i++) {
         sum_exp += exp(Z[i]);
+        printf("%lf ",Z[i]);
     }
+    printf("\nThe output before softmax\n");
     for (int i = 0; i < size; i++) {
+        printf("%lf ",A[i]);
         A[i] = exp(Z[i]) / sum_exp;        
+        printf("%lf ",A[i]);
     }
+    printf("\nThe output after softmax\n");
+
 }
 
 void init_params(double *W1, double *b1, double *W2, double *b2) {
@@ -160,7 +166,6 @@ void train(double *X, double *Y, double *W1, double *b1, double *W2, double *b2,
     double dW1[HIDDEN_SIZE * INPUT_SIZE], db1[HIDDEN_SIZE];
     double dW2[OUTPUT_SIZE * HIDDEN_SIZE], db2[OUTPUT_SIZE];
 
-    // Create an array of indices for shuffling
     int *indices = malloc(m_train * sizeof(int));
     if (indices == NULL) {
         perror("Failed to allocate indices");
@@ -193,17 +198,12 @@ void train(double *X, double *Y, double *W1, double *b1, double *W2, double *b2,
         if (epoch % 5 == 0) {
             int pred = get_prediction(A2);
             int pred_test[TEST_SIZE];
-            // lets do prediction for the last 20k labels that we're not used
             for(int t=0;t<TEST_SIZE;t++){
                 forward_prop(W1, b1, W2, b2, &X_test[t * INPUT_SIZE], Z1, A1, Z2, A2);
                 pred_test[t] = Y_test[t] - get_prediction(A2);
             }
             printf("The accuracy train is : %lf\n",get_accuracy(preds,m_train));
             printf("The accuracy test is : %lf\n",get_accuracy(pred_test,TEST_SIZE));
-
-            // printf("The biases right now\n");
-            // for(int i=0;i<10;i++)
-            //     printf("%lf %lf\n",b1[i],b2[i]);
             printf("The label %lf\n",l);
             printf("Epoch %d: Prediction = %d\n", epoch, pred);
         }
@@ -275,21 +275,19 @@ Number* read_csv(const char* filename) {
 int main() {
     srand(time(0));
 
-    // Read CSV data
     Number *data = read_csv("train.csv");
     if (!data) {
         fprintf(stderr, "Failed to load data\n");
         return EXIT_FAILURE;
     }
 
-    // Allocate memory for input (X) and label (Y) arrays.
-    // X: each sample is an array of INPUT_SIZE doubles.
     double *X_train = malloc(sizeof(double) * (DEV_SIZE) * INPUT_SIZE);
     double *Y_train = malloc(sizeof(double) * (DEV_SIZE));
     double *X_test = malloc(sizeof(double) * TEST_SIZE * INPUT_SIZE);
     double *Y_test = malloc(sizeof(double) * TEST_SIZE * INPUT_SIZE);
+
     if (!X_train || !Y_train || !X_test || !Y_test) {
-        fprintf(stderr, "Failed to allocate for X or Y test/training data\n");
+        fprintf(stderr, "Failed to allocate for memory for training or test data\n");
         free(data);
         return EXIT_FAILURE;
     }
@@ -307,13 +305,13 @@ int main() {
             X_test[(i - DEV_SIZE) * INPUT_SIZE + j] = data[i].pixels[j] / 255.0;
         }
     }
-    free(data);  // Data is now in X and Y
+    free(data);  // Data is now in X and Y so we can free the momory 
 
-    // Allocate parameters dynamically
     double *W1 = malloc(sizeof(double) * HIDDEN_SIZE * INPUT_SIZE);
     double *b1 = malloc(sizeof(double) * HIDDEN_SIZE);
     double *W2 = malloc(sizeof(double) * OUTPUT_SIZE * HIDDEN_SIZE);
     double *b2 = malloc(sizeof(double) * OUTPUT_SIZE);
+
     if (!W1 || !b1 || !W2 || !b2) {
         fprintf(stderr, "Failed to allocate parameters\n");
         free(X_train);
@@ -325,22 +323,15 @@ int main() {
 
     train(X_train, Y_train, W1, b1, W2, b2, DEV_SIZE, X_test, Y_test);
 
-    // Test forward propagation on a single sample (for example, the first sample)
     double Z1[HIDDEN_SIZE], A1[HIDDEN_SIZE], Z2[OUTPUT_SIZE], A2[OUTPUT_SIZE];
+
     printf("The sample taken is : %lf",Y_train[123]);
     forward_prop(W1, b1, W2, b2, &X_train[123*784], Z1, A1, Z2, A2);
+
     int pred_class = get_prediction(A2);
     printf("Predicted class for first sample: %d\n", pred_class);
 
-    // Clean up allocated memory
-    free(W1);
-    free(b1);
-    free(W2);
-    free(b2);
-    free(X_train);
-    free(Y_train);
-    free(X_test);
-    free(Y_test);
+    free(W1); free(b1); free(W2); free(b2); free(X_train); free(Y_train); free(X_test); free(Y_test);
 
     return 0;
 }
