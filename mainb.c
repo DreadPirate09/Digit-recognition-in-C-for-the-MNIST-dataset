@@ -11,6 +11,7 @@
 #define ITERATIONS 500
 #define DATA_SIZE 42000
 // 20% from the total data size
+#define DEV_SIZE 33600
 #define TEST_SIZE 8400
 #define NUM_PIXELS 784
 
@@ -271,74 +272,11 @@ Number* read_csv(const char* filename) {
     return numbers;
 }
 
-// Read the CSV file into an array of Number structures
-Test* read_csv_test(const char* filename) {
-    FILE* file = fopen(filename, "r");
-    if (!file) {
-        perror("Error opening file");
-        return NULL;
-    }
-    
-    char buffer[16032];
-
-    // Skip header line
-    if (!fgets(buffer, sizeof(buffer), file)) {
-        fclose(file);
-        fprintf(stderr, "Empty file\n");
-        return NULL;
-    }
-
-    // Count the number of records (lines)
-    int count = 0;
-    while (fgets(buffer, sizeof(buffer), file))
-        count++;
-    rewind(file);
-    fgets(buffer, sizeof(buffer), file);  // skip header again
-
-    Test* numbers = malloc(count * sizeof(Test));
-    if (!numbers) {
-        fclose(file);
-        perror("Memory allocation failed");
-        return NULL;
-    }
-
-    for (int i = 0; i < count; i++) {
-        if (!fgets(buffer, sizeof(buffer), file)) {
-            fprintf(stderr, "Error reading line %d\n", i + 2);
-            free(numbers);
-            fclose(file);
-            return NULL;
-        }
-        char* token = strtok(buffer, ",");
-        if (!token) {
-            fprintf(stderr, "Invalid format in line %d\n", i + 2);
-            free(numbers);
-            fclose(file);
-            return NULL;
-        }
-        numbers[i].pixels[0] = atoi(token);
-        for (int j = 1; j < NUM_PIXELS; j++) {
-            token = strtok(NULL, ",");
-            if (!token) {
-                fprintf(stderr, "Missing pixel data in line %d\n", i + 2);
-                free(numbers);
-                fclose(file);
-                return NULL;
-            }
-            numbers[i].pixels[j] = atoi(token);
-        }
-    }
-    fclose(file);
-    return numbers;
-}
-
-
 int main() {
     srand(time(0));
 
     // Read CSV data
     Number *data = read_csv("train.csv");
-    // Test *data_test = read_csv_test("test.csv");
     if (!data) {
         fprintf(stderr, "Failed to load data\n");
         return EXIT_FAILURE;
@@ -346,27 +284,27 @@ int main() {
 
     // Allocate memory for input (X) and label (Y) arrays.
     // X: each sample is an array of INPUT_SIZE doubles.
-    double *X = malloc(sizeof(double) * (DATA_SIZE - TEST_SIZE) * INPUT_SIZE);
-    double *Y = malloc(sizeof(double) * (DATA_SIZE - TEST_SIZE));
+    double *X_train = malloc(sizeof(double) * (DEV_SIZE) * INPUT_SIZE);
+    double *Y_train = malloc(sizeof(double) * (DEV_SIZE));
     double *X_test = malloc(sizeof(double) * TEST_SIZE * INPUT_SIZE);
     double *Y_test = malloc(sizeof(double) * TEST_SIZE * INPUT_SIZE);
-    if (!X || !Y || !X_test || !Y_test) {
+    if (!X_train || !Y_train || !X_test || !Y_test) {
         fprintf(stderr, "Failed to allocate for X or Y test/training data\n");
         free(data);
         return EXIT_FAILURE;
     }
 
-    for (int i = 0; i < (DATA_SIZE - TEST_SIZE); i++) {
-        Y[i] = data[i].value;
+    for (int i = 0; i < (DEV_SIZE); i++) {
+        Y_train[i] = data[i].value;
         for (int j = 0; j < INPUT_SIZE; j++) {
-            X[i * INPUT_SIZE + j] = data[i].pixels[j] / 255.0;
+            X_train[i * INPUT_SIZE + j] = data[i].pixels[j] / 255.0;
         }
     }
 
-    for (int i = (DATA_SIZE - TEST_SIZE); i < DATA_SIZE; i++) {
-        Y_test[i - DATA_SIZE + TEST_SIZE] = data[i].value;
+    for (int i = (DEV_SIZE); i < DATA_SIZE; i++) {
+        Y_test[i - DEV_SIZE] = data[i].value;
         for (int j = 0; j < INPUT_SIZE; j++) {
-            X_test[(i - DATA_SIZE + TEST_SIZE) * INPUT_SIZE + j] = data[i].pixels[j] / 255.0;
+            X_test[(i - DEV_SIZE) * INPUT_SIZE + j] = data[i].pixels[j] / 255.0;
         }
     }
     free(data);  // Data is now in X and Y
@@ -378,19 +316,19 @@ int main() {
     double *b2 = malloc(sizeof(double) * OUTPUT_SIZE);
     if (!W1 || !b1 || !W2 || !b2) {
         fprintf(stderr, "Failed to allocate parameters\n");
-        free(X);
-        free(Y);
+        free(X_train);
+        free(Y_train);
         return EXIT_FAILURE;
     }
 
     init_params(W1, b1, W2, b2);
 
-    train(X, Y, W1, b1, W2, b2, DATA_SIZE - TEST_SIZE, X_test, Y_test);
+    train(X_train, Y_train, W1, b1, W2, b2, DEV_SIZE, X_test, Y_test);
 
     // Test forward propagation on a single sample (for example, the first sample)
     double Z1[HIDDEN_SIZE], A1[HIDDEN_SIZE], Z2[OUTPUT_SIZE], A2[OUTPUT_SIZE];
-    printf("The sample taken is : %lf",Y[123]);
-    forward_prop(W1, b1, W2, b2, &X[123*784], Z1, A1, Z2, A2);
+    printf("The sample taken is : %lf",Y_train[123]);
+    forward_prop(W1, b1, W2, b2, &X_train[123*784], Z1, A1, Z2, A2);
     int pred_class = get_prediction(A2);
     printf("Predicted class for first sample: %d\n", pred_class);
 
@@ -399,8 +337,8 @@ int main() {
     free(b1);
     free(W2);
     free(b2);
-    free(X);
-    free(Y);
+    free(X_train);
+    free(Y_train);
     free(X_test);
     free(Y_test);
 
