@@ -363,9 +363,9 @@ int main() {
     }
 
     for (int i = (DATA_SIZE - TEST_SIZE); i < DATA_SIZE; i++) {
-        Y_test[i] = data[i].value;
+        Y_test[i - DATA_SIZE + TEST_SIZE] = data[i].value;
         for (int j = 0; j < INPUT_SIZE; j++) {
-            X_test[i * INPUT_SIZE + j] = data[i].pixels[j] / 255.0;
+            X_test[(i - DATA_SIZE + TEST_SIZE) * INPUT_SIZE + j] = data[i].pixels[j] / 255.0;
         }
     }
     free(data);  // Data is now in X and Y
