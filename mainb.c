@@ -7,7 +7,7 @@
 #define INPUT_SIZE 784
 #define HIDDEN_SIZE 10
 #define OUTPUT_SIZE 10
-#define ALPHA 0.01
+#define LR 0.01
 #define ITERATIONS 500
 #define DATA_SIZE 42000
 #define TEST_SIZE 20000
@@ -112,16 +112,16 @@ void backward_prop(double *Z1, double *A1, double *Z2, double *A2,
 
 void update_params(double *W1, double *b1, double *W2, double *b2,double *dW1, double *db1, double *dW2, double *db2) {
     for (int i = 0; i < HIDDEN_SIZE * INPUT_SIZE; i++) {
-        W1[i] -= ALPHA * dW1[i];
+        W1[i] -= LR * dW1[i];
     }
     for (int i = 0; i < HIDDEN_SIZE; i++) {
-        b1[i] -= ALPHA * db1[i];
+        b1[i] -= LR * db1[i];
     }
     for (int i = 0; i < OUTPUT_SIZE * HIDDEN_SIZE; i++) {
-        W2[i] -= ALPHA * dW2[i];
+        W2[i] -= LR * dW2[i];
     }
     for (int i = 0; i < OUTPUT_SIZE; i++) {
-        b2[i] -= ALPHA * db2[i];
+        b2[i] -= LR * db2[i];
     }
 }
 
@@ -199,9 +199,9 @@ void train(double *X, double *Y, double *W1, double *b1, double *W2, double *b2,
             printf("The accuracy train is : %lf\n",get_accuracy(preds,m_train));
             printf("The accuracy test is : %lf\n",get_accuracy(pred_test,TEST_SIZE));
 
-            printf("The biases right now\n");
-            for(int i=0;i<10;i++)
-                printf("%lf %lf\n",b1[i],b2[i]);
+            // printf("The biases right now\n");
+            // for(int i=0;i<10;i++)
+            //     printf("%lf %lf\n",b1[i],b2[i]);
             printf("The label %lf\n",l);
             printf("Epoch %d: Prediction = %d\n", epoch, pred);
         }
