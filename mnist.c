@@ -37,18 +37,12 @@ void ReLU(double *Z, int size) {
 
 void softmax(double *Z, double *A, int size) {
     double sum_exp = 0.0;
-    printf("This is z : \n");
     for (int i = 0; i < size; i++) {
         sum_exp += exp(Z[i]);
-        printf("%lf ",Z[i]);
     }
-    printf("\nThe output before softmax\n");
     for (int i = 0; i < size; i++) {
-        printf("%lf ",A[i]);
-        A[i] = exp(Z[i]) / sum_exp;        
-        printf("%lf ",A[i]);
+        A[i] = exp(Z[i]) / sum_exp;
     }
-    printf("\nThe output after softmax\n");
 
 }
 
@@ -166,6 +160,8 @@ void train(double *X, double *Y, double *W1, double *b1, double *W2, double *b2,
     double dW1[HIDDEN_SIZE * INPUT_SIZE], db1[HIDDEN_SIZE];
     double dW2[OUTPUT_SIZE * HIDDEN_SIZE], db2[OUTPUT_SIZE];
 
+    FILE *logs_train = fopen("logs_train","a");
+
     int *indices = malloc(m_train * sizeof(int));
     if (indices == NULL) {
         perror("Failed to allocate indices");
@@ -203,11 +199,16 @@ void train(double *X, double *Y, double *W1, double *b1, double *W2, double *b2,
                 pred_test[t] = Y_test[t] - get_prediction(A2);
             }
             printf("The accuracy train is : %lf\n",get_accuracy(preds,m_train));
+            fprintf(logs_train,"The accuracy train is : %lf\n",get_accuracy(preds,m_train));
             printf("The accuracy test is : %lf\n",get_accuracy(pred_test,TEST_SIZE));
+            fprintf(logs_train,"The accuracy test is : %lf\n",get_accuracy(pred_test,TEST_SIZE));
             printf("The label %lf\n",l);
+            fprintf(logs_train,"The accuracy test is : %lf\n",get_accuracy(pred_test,TEST_SIZE));
             printf("Epoch %d: Prediction = %d\n", epoch, pred);
+            fprintf(logs_train,"Epoch %d: Prediction = %d\n", epoch, pred);
         }
     }
+    fclose(logs_train);
     free(indices);
 }
 

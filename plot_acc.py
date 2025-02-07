@@ -1,11 +1,7 @@
 import matplotlib.pyplot as plt
 
-# Logs containing accuracy for each epoch
-logs = """
-The accuracy train is : 97.007937
-The accuracy test is : 91.619048
-"""  
-# Replace with your actual logs
+logs_file = "logs_train"
+logs = open(logs_file).read()
 
 train_accuracies = []
 test_accuracies = []

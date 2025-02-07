@@ -1,0 +1,131 @@
+The accuracy train is : 82.809524
+The accuracy test is : 90.202381
+The accuracy test is : 90.202381
+Epoch 0: Prediction = 7
+The accuracy train is : 92.178571
+The accuracy test is : 92.416667
+The accuracy test is : 92.416667
+Epoch 5: Prediction = 1
+The accuracy train is : 93.330357
+The accuracy test is : 92.559524
+The accuracy test is : 92.559524
+Epoch 10: Prediction = 5
+The accuracy train is : 93.669643
+The accuracy test is : 92.392857
+The accuracy test is : 92.392857
+Epoch 15: Prediction = 5
+The accuracy train is : 94.095238
+The accuracy test is : 92.523810
+The accuracy test is : 92.523810
+Epoch 20: Prediction = 1
+The accuracy train is : 94.339286
+The accuracy test is : 92.500000
+The accuracy test is : 92.500000
+Epoch 25: Prediction = 0
+The accuracy train is : 94.440476
+The accuracy test is : 92.821429
+The accuracy test is : 92.821429
+Epoch 30: Prediction = 9
+The accuracy train is : 94.610119
+The accuracy test is : 92.583333
+The accuracy test is : 92.583333
+Epoch 35: Prediction = 7
+The accuracy train is : 94.788690
+The accuracy test is : 92.785714
+The accuracy test is : 92.785714
+Epoch 40: Prediction = 6
+The accuracy train is : 94.797619
+The accuracy test is : 92.690476
+The accuracy test is : 92.690476
+Epoch 45: Prediction = 8
+The accuracy train is : 94.803571
+The accuracy test is : 92.309524
+The accuracy test is : 92.309524
+Epoch 50: Prediction = 6
+The accuracy train is : 95.113095
+The accuracy test is : 92.690476
+The accuracy test is : 92.690476
+Epoch 55: Prediction = 2
+The accuracy train is : 94.913690
+The accuracy test is : 92.690476
+The accuracy test is : 92.690476
+Epoch 60: Prediction = 0
+The accuracy train is : 95.116071
+The accuracy test is : 92.035714
+The accuracy test is : 92.035714
+Epoch 65: Prediction = 6
+The accuracy train is : 95.023810
+The accuracy test is : 92.000000
+The accuracy test is : 92.000000
+Epoch 70: Prediction = 9
+The accuracy train is : 95.077381
+The accuracy test is : 92.488095
+The accuracy test is : 92.488095
+Epoch 75: Prediction = 7
+The accuracy train is : 95.223214
+The accuracy test is : 92.380952
+The accuracy test is : 92.380952
+Epoch 80: Prediction = 1
+The accuracy train is : 95.229167
+The accuracy test is : 92.369048
+The accuracy test is : 92.369048
+Epoch 85: Prediction = 7
+The accuracy train is : 95.348214
+The accuracy test is : 92.154762
+The accuracy test is : 92.154762
+Epoch 90: Prediction = 1
+The accuracy train is : 95.285714
+The accuracy test is : 91.821429
+The accuracy test is : 91.821429
+Epoch 95: Prediction = 1
+The accuracy train is : 95.425595
+The accuracy test is : 92.261905
+The accuracy test is : 92.261905
+Epoch 100: Prediction = 8
+The accuracy train is : 95.336310
+The accuracy test is : 92.261905
+The accuracy test is : 92.261905
+Epoch 105: Prediction = 1
+The accuracy train is : 95.380952
+The accuracy test is : 91.916667
+The accuracy test is : 91.916667
+Epoch 110: Prediction = 5
+The accuracy train is : 95.437500
+The accuracy test is : 92.404762
+The accuracy test is : 92.404762
+Epoch 115: Prediction = 6
+The accuracy train is : 95.505952
+The accuracy test is : 92.559524
+The accuracy test is : 92.559524
+Epoch 120: Prediction = 4
+The accuracy train is : 95.446429
+The accuracy test is : 92.535714
+The accuracy test is : 92.535714
+Epoch 125: Prediction = 6
+The accuracy train is : 95.547619
+The accuracy test is : 92.273810
+The accuracy test is : 92.273810
+Epoch 130: Prediction = 8
+The accuracy train is : 95.610119
+The accuracy test is : 92.380952
+The accuracy test is : 92.380952
+Epoch 135: Prediction = 6
+The accuracy train is : 95.726190
+The accuracy test is : 92.000000
+The accuracy test is : 92.000000
+Epoch 140: Prediction = 7
+The accuracy train is : 95.818452
+The accuracy test is : 92.154762
+The accuracy test is : 92.154762
+Epoch 145: Prediction = 8
+The accuracy train is : 95.550595
+The accuracy test is : 92.321429
+The accuracy test is : 92.321429
+Epoch 150: Prediction = 3
+The accuracy train is : 95.604167
+The accuracy test is : 91.976190
+The accuracy test is : 91.976190
+Epoch 155: Prediction = 6
+The accuracy train is : 95.666667
+The accuracy test is : 92.214286
+The accuracy test i
