@@ -203,7 +203,6 @@ void train(double *X, double *Y, double *W1, double *b1, double *W2, double *b2,
             printf("The accuracy test is : %lf\n",get_accuracy(pred_test,TEST_SIZE));
             fprintf(logs_train,"The accuracy test is : %lf\n",get_accuracy(pred_test,TEST_SIZE));
             printf("The label %lf\n",l);
-            fprintf(logs_train,"The accuracy test is : %lf\n",get_accuracy(pred_test,TEST_SIZE));
             printf("Epoch %d: Prediction = %d\n", epoch, pred);
             fprintf(logs_train,"Epoch %d: Prediction = %d\n", epoch, pred);
         }
